@@ -33,3 +33,10 @@ end
 
 Base.occursin(w::String, c::Corpus) = haskey(c.occurrences.dicts[1], w)
 
+function Base.:(==)(c1::Corpus, c2::Corpus)
+	return ω(c1) == ω(c2) && c1.occurrences == c2.occurrences
+end
+
+
+
+
