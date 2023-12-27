@@ -2,7 +2,7 @@
 abstract type Estimator end
 
 # ===== Zipfian smoothers =====
-struct ZipfianEstimator <: Estimator
+abstract type ZipfianEstimator <: Estimator end
 struct GaleSampson <: ZipfianEstimator end
 struct NaranBalasub <: ZipfianEstimator end
 
@@ -12,11 +12,9 @@ function V(::ZipfianEstimator, m::Int, c::Corpus; kwargs...) end
 function V(::GaleSampson, m::Int, c::Corpus)
 	mp(m::Int, c::Corpus) = c.m[findfirst(0 .< c.m .< m)]
 	mf(m::Int, c::Corpus) = c.m[findfirst(0 .< c.m .< m)]
-	return @match m begin
-		1   => V(1, c)
-		c.M => 2V(m, c) / (2m - mp(m, c))
-		_   => 2V(m, c) / (mf(m, c) - mp(m, c))
-	end
+	m == 1 && return V(1, c)
+	m == c.M && return 2V(m, c) / (2m - mp(m, c))
+	return 2V(m, c) / (mf(m, c) - mp(m, c))
 end
 
 "Naranan and Balasubrahmanyan (1.14)"
@@ -26,7 +24,7 @@ end
 
 
 # ===== "characteristic constants" C =====
-struct CharacteristicEstimator <: Estimator
+abstract type CharacteristicEstimator <: Estimator end
 struct Yule <: CharacteristicEstimator end
 struct Simpson <: CharacteristicEstimator end
 struct Guiraud <: CharacteristicEstimator end
