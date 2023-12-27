@@ -11,6 +11,7 @@ struct Safe <: CheckStyle end
 struct Fast <: CheckStyle end
 
 include("corpora.jl")
+include("zipf.jl")
 include("empirical.jl")
 include("estimators.jl")
 
