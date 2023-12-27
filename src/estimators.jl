@@ -39,6 +39,7 @@ function C(::CharacteristicEstimator, c::Corpus; kwargs...) end
 "Yule (1.15)"
 function C(::Yule, c::Corpus)
 	return 1e4 * sum(m^2 * V(m, c) - N(c) for m in findall(c.spectrum .> 0)) / N(c)^2
+end
 
 "Simpson (1.16)"
 function C(::Simpson, c::Corpus)
