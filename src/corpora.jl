@@ -4,7 +4,7 @@
 	ω::Vector{String}
 	occurrences::NamedVector{BitVector}
 	V::Int = length(ω)
-	N::Int = v == 0 ? 0 : length(occurrences[1])
+	N::Int = V == 0 ? 0 : length(occurrences[1])
 	f::NamedVector{Int} = NamedArray([sum(x) for x in occurrences], ω)
 	spectrum::Vector{Int} = counts(f)
 	m = findall(spectrum .!= 0)
