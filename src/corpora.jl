@@ -26,6 +26,10 @@ function Base.getindex(
 	return Corpus(source = source, ω = ω, occurrences = occurrences)
 end
 
+function Base.getindex(c::Corpus, w::String)
+	return c.occurrences[w]
+end
+
 function StatsBase.sample(c::Corpus, args...; kwargs...)
 	inds = sample(1:N(c), args...; kwargs...)
 	return c[inds]

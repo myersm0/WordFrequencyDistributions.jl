@@ -29,6 +29,8 @@ subsets = [
 	@test all(f(i, c) == 1 for i in (length(vowels) + 1):length(alphabet))
 	@test all(f(w, c) == 1 for w in consonants)
 
+	@test all(f(c[letter]) == (letter in vowels ? 21 : 1) for letter in alphabet)
+
 	@test V(c) == length(alphabet)
 	@test V(1, c) == length(consonants)
 	@test V(21, c) == length(vowels)

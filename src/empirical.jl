@@ -36,6 +36,10 @@ p(::Fast, w::String, c::Corpus) = f(w, c) / N(c)
 p(::Safe, i::Int, c::Corpus) = f(Safe(), i, c) / N(c)
 p(::Safe, w::String, c::Corpus) = f(Safe(), w, c) / N(c)
 
+# BitVector alternatives for f and p
+f(x::BitVector) = sum(x)
+p(x::BitVector) = f(x) / length(x)
+
 "Get the empirical structural type distribution for the `i`th spectrum element in the corpus."
 g(m::Int, c::Corpus) = m > c.M ? 0 : sum(c.spectrum[m:end])
 
