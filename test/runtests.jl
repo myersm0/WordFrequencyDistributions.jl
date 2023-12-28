@@ -41,7 +41,7 @@ subsets = [
 		c′ = c[inds]
 		@test c′ == Corpus(text[inds])
 		@test N(c′) == length(inds)
-		@test sum(m * V(m, c) for m in c.m) == N(c)
+		@test sum(m * V(m, c′) for m in m(c′)) == N(c′)
 	end
 
 	c′ = sample(c, length(consonants); replace = false)
@@ -57,7 +57,7 @@ subsets = [
 	@test all(p(Safe(), w, c) == p(Fast(), w, c) for w in alphabet)
 
 	@test g(1, c) == length(alphabet)
-	@test all(g(m, c) == length(vowels) for m in 2:c.M)
+	@test all(g(m, c) == length(vowels) for m in 2:M(c))
 end
 
 

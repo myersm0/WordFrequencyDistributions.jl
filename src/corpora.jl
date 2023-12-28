@@ -66,6 +66,7 @@ function Base.:(==)(c1::Corpus, c2::Corpus)
 	return ω(c1) == ω(c2) && occurrences(c1) == occurrences(c2)
 end
 
+occurrences(c::Corpus) = c.occurrences
 occurrences(w::String, c::Corpus) = c[w]
 
 "Get `nsteps` equispaced points from 1 to N(c::Corpus)`."
