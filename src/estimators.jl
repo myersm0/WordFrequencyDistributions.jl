@@ -10,7 +10,7 @@ struct NaranBalasub <: ZipfianEstimator end
 function V(::ZipfianEstimator, m::Int, c::Corpus; kwargs...) end
 
 function V(::Zipf, m::Int, c::Corpus)
-	return V(N) / (m * (m + 1))
+	return V(c) / (m * (m + 1))
 end
 
 "Gale and Sampson (1.12)"
