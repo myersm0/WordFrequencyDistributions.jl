@@ -16,10 +16,10 @@ end
 "Gale and Sampson (1.12)"
 function V(::GaleSampson, m::Int, c::Corpus)
 	m in c.m || return NaN
-	mp(m::Int, c::Corpus) = c.m[findfirst(0 .< c.m .< m)]
-	mf(m::Int, c::Corpus) = c.m[findfirst(0 .> c.m .> m)]
 	m == 1 && return V(1, c)
+	mp(m::Int, c::Corpus) = c.m[findlast(c.m .< m)]
 	m == c.M && return 2V(m, c) / (2m - mp(m, c))
+	mf(m::Int, c::Corpus) = c.m[findfirst(c.m .> m)]
 	return 2V(m, c) / (mf(m, c) - mp(m, c))
 end
 
