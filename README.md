@@ -13,4 +13,47 @@ smaller_corpus = c[1:1000]
 V(smaller_corpus)
 ```
 
+## Usage
+If I have a vector of strings called `text` (e.g. tokenized from a document), constructing a `Corpus` struct is simple:
+```
+c = Corpus(text)
+```
+
+To generate another corpus (at little cost) that's just the first 1000 tokens of `text`:
+```
+c[1:1000]
+
+# or, equivalently:
+Corpus(text[1:1000])
+```
+
+Below I demonstrate creation of a figure similar to one that Baayen shows in Chapter 1. Here we are using the observed relative sample frequency `p` of the word "the" in the text, in 20 intervals of increasing size along with Monte Carlo confidence intervals generated from 1000 random permutations of the text:
+```
+w = "the"
+
+break_pts = intervals(c)
+observed_p = map(N -> p(c[w][1:N]), break_pts)
+
+ntrials = 1000
+nsteps = 20
+permuted_p = zeros(nsteps, ntrials)
+Threads.@threads for i in 1:ntrials
+	c′ = permute(c)
+	permuted_p[:, i] .= map(N -> p(c′[w][1:N]), break_pts)
+end
+
+conf_intervals = map(x -> quantile(x, (0.05, 0.95)), eachrow(permuted_p))
+
+using GLMakie
+
+fig = Figure()
+ax = Axis(fig[1, 1])
+scatter!(ax, break_pts, observed_p; color = :black)
+lines!(ax, break_pts, [first(x) for x in conf_intervals]; color = :black, linestyle = :dot)
+lines!(ax, break_pts, [last(x) for x in conf_intervals]; color = :black, linestyle = :dot)
+```
+
+![demo1](https://github.com/myersm0/WordFrequencyDistributions.jl/blob/main/examples/demo1.png)
+
 [![Build Status](https://github.com/myersm0/WordFrequencyDistributions.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/WordFrequencyDistributions.jl/actions/workflows/CI.yml?query=branch%3Amain)
+
