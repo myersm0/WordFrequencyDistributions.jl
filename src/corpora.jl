@@ -27,7 +27,7 @@ function Base.getindex(
 end
 
 function StatsBase.sample(c::Corpus, args...; kwargs...)
-	inds = sample(1:N(c), args; kwargs...)
+	inds = sample(1:N(c), args...; kwargs...)
 	return c[inds]
 end
 
