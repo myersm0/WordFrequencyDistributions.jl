@@ -51,7 +51,7 @@ occurrences(w::String, c::Corpus) = c.occurrences[w]
 "Get `nsteps` equispaced points from 1 to N(c::Corpus)`."
 function intervals(c::Corpus; nsteps = 20)
 	step_size = Int(round(N(c) / nsteps))
-	rng = LinRange{Int, Int}(step_size, step_size * nsteps, nsteps) |> collect
+	rng = range(step_size, step_size * nsteps, nsteps) |> collect .|> Int
 	rng[end] = N(c)
 	return rng
 end
