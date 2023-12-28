@@ -55,7 +55,7 @@ function StatsBase.sample(c::Corpus, args...; kwargs...)
 	return c[inds]
 end
 
-function Base.permute(c::Corpus)
+function permute(c::Corpus)
 	inds = sample(1:N(c), N(c); replace = false)
 	return c[inds]
 end
