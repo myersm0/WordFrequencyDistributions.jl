@@ -15,7 +15,7 @@ end
 
 "Gale and Sampson (1.12)"
 function V(::GaleSampson, m::Int, c::Corpus)
-	m in c.m || error(DomainError)
+	m in c.m || return NaN
 	mp(m::Int, c::Corpus) = c.m[findfirst(0 .< c.m .< m)]
 	mf(m::Int, c::Corpus) = c.m[findfirst(0 .> c.m .> m)]
 	m == 1 && return V(1, c)
