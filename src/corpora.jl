@@ -26,7 +26,7 @@ function Base.getindex(
 	return Corpus(source = source, ω = ω, occurrences = occurrences)
 end
 
-function Base.getindex(c::Corpus, w::String)
+function Base.getindex(c::Corpus, w::Union{String, Vector{String}})
 	return c.occurrences[w]
 end
 
