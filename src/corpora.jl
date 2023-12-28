@@ -2,18 +2,39 @@
 @kwdef struct Corpus
 	source::Vector{String}
 	ω::Vector{String}
-	occurrences::NamedVector{BitVector}
+	ωmap = Dict(w => i for (i, w) in enumerate(ω))
+	occurrences::Lazy.LazyList
 	V::Int = length(ω)
-	N::Int = V == 0 ? 0 : length(occurrences[1])
-	f::NamedVector{Int} = NamedArray([sum(x) for x in occurrences], ω)
-	spectrum::Vector{Int} = counts(f)
-	m = findall(spectrum .!= 0)
-	M = m[end]
+	N::Int = V == 0 ? 0 : length(source)
+	f::Ref{Union{Nothing, Vector{Int}}} = nothing
+	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing
+	m::Ref{Union{Nothing, Vector{Int}}} = nothing
+	M::Ref{Union{Nothing, Int}} = nothing
+end
+
+function f(c::Corpus)
+	isnothing(c.f[]) && (c.f[] = [sum(x) for x in c.occurrences])
+	return c.f[]
+end
+
+function spectrum(c::Corpus)
+	isnothing(c.spectrum[]) && (c.spectrum[] = counts(f(c)))
+	return c.spectrum[]
+end
+
+function m(c::Corpus)
+	isnothing(c.m[]) && (c.m[] = findall(spectrum(c) .!= 0))
+	return c.m[]
+end
+
+function M(c::Corpus)
+	isnothing(c.M[]) && (c.M[] = m(c)[end])
+	return c.M[]
 end
 
 function Corpus(v::Vector{String})
 	ω = unique(v)
-	occurrences = NamedArray([v .== w for w in ω], ω)
+	occurrences = Lazy.@lazy [v .== w for w in ω]
 	return Corpus(source = v, ω = ω, occurrences = occurrences)
 end
 
@@ -22,12 +43,12 @@ function Base.getindex(
 	) where T <: Integer
 	source = c.source[rng]
 	ω = unique(source)
-	occurrences = NamedArray([c.occurrences[w][rng] for w in ω], ω)
+	occurrences = Lazy.@lazy [c.occurrences[i][rng] for i in eachindex(ω)]
 	return Corpus(source = source, ω = ω, occurrences = occurrences)
 end
 
 function Base.getindex(c::Corpus, w::Union{String, Vector{String}})
-	return c.occurrences[w]
+	return c.occurrences[c.ωmap[w]]
 end
 
 function StatsBase.sample(c::Corpus, args...; kwargs...)
@@ -40,13 +61,13 @@ function StatsBase.sample(c::Corpus)
 	return c[inds]
 end
 
-Base.occursin(w::String, c::Corpus) = haskey(c.occurrences.dicts[1], w)
+Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
 
 function Base.:(==)(c1::Corpus, c2::Corpus)
-	return ω(c1) == ω(c2) && c1.occurrences == c2.occurrences
+	return ω(c1) == ω(c2) && occurrences(c1) == occurrences(c2)
 end
 
-occurrences(w::String, c::Corpus) = c.occurrences[w]
+occurrences(w::String, c::Corpus) = c[w]
 
 "Get `nsteps` equispaced points from 1 to N(c::Corpus)`."
 function intervals(c::Corpus; nsteps = 20)
@@ -55,5 +76,12 @@ function intervals(c::Corpus; nsteps = 20)
 	rng[end] = N(c)
 	return rng
 end
+
+function Base.show(io::IO, mime::MIME"text/plain", c::Corpus)
+	println("OK")
+end
+
+
+
 
 

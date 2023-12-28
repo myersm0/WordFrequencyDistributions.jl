@@ -15,11 +15,11 @@ end
 
 "Gale and Sampson (1.12)"
 function V(::GaleSampson, m::Int, c::Corpus)
-	m in c.m || return NaN
+	m in m(c) || return NaN
 	m == 1 && return V(1, c)
-	mp(m::Int, c::Corpus) = c.m[findlast(c.m .< m)]
-	m == c.M && return 2V(m, c) / (2m - mp(m, c))
-	mf(m::Int, c::Corpus) = c.m[findfirst(c.m .> m)]
+	mp(m::Int, c::Corpus) = m(c)[findlast(m(c) .< m)]
+	m == M(c) && return 2V(m, c) / (2m - mp(m, c))
+	mf(m::Int, c::Corpus) = m(c)[findfirst(m(c) .> m)]
 	return 2V(m, c) / (mf(m, c) - mp(m, c))
 end
 
@@ -42,12 +42,12 @@ function C(::CharacteristicEstimator, c::Corpus; kwargs...) end
 
 "Yule (1.15)"
 function C(::Yule, c::Corpus)
-	return 1e4 * sum(m^2 * V(m, c) - N(c) for m in c.m) / N(c)^2
+	return 1e4 * sum(m^2 * V(m, c) - N(c) for m in m(c)) / N(c)^2
 end
 
 "Simpson (1.16)"
 function C(::Simpson, c::Corpus)
-	return sum(V(m, c) * (m / N(c)) * ((m - 1) / (N(c) - 1)) for m in c.m)
+	return sum(V(m, c) * (m / N(c)) * ((m - 1) / (N(c) - 1)) for m in m(c))
 end
 
 "Guiraud (1.17)"

@@ -15,8 +15,8 @@ f(i::Int, c::Corpus) = f(Fast(), i, c)
 f(w::String, c::Corpus) = f(Fast(), w, c)
 
 # "fast" variants of f(...) by default
-f(::Fast, i::Int, c::Corpus) = c.f[c.ω[i]]
-f(::Fast, w::String, c::Corpus) = c.f[w]
+f(::Fast, i::Int, c::Corpus) = f(c)[i]
+f(::Fast, w::String, c::Corpus) = f(c)[c.ωmap[w]]
 
 # "safe" variants of f(...) check whether the requested item is in the lexicon or not
 f(::Safe, i::Int, c::Corpus) = i <= V(c) ? f(Fast(), i, c) : 0
@@ -41,11 +41,11 @@ f(x::BitVector) = sum(x)
 p(x::BitVector) = f(x) / length(x)
 
 "Get the empirical structural type distribution for the `i`th spectrum element in the corpus."
-g(m::Int, c::Corpus) = m > c.M ? 0 : sum(c.spectrum[m:end])
+g(m::Int, c::Corpus) = m > M(c) ? 0 : sum(spectrum(c)[m:end])
 
 "Get the number of words occurring `m` times in the corpus."
-V(m::Int, c::Corpus) = c.spectrum[m]
+V(m::Int, c::Corpus) = spectrum(c)[m]
 
 "Get the frequency of the token with the `z`th Zipf rank"
-f(z::ZipfRank, c::Corpus) = z > V(c) ? 0 : c.M - findfirst(cumsum(reverse(c.spectrum)) .>= z) + 1
+f(z::ZipfRank, c::Corpus) = z > V(c) ? 0 : M(c) - findfirst(cumsum(reverse(spectrum(c))) .>= z) + 1
 

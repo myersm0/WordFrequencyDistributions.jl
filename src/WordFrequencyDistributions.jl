@@ -5,6 +5,7 @@ using NamedArrays
 using StatsBase
 using Match
 using Chain
+import Lazy
 
 abstract type CheckStyle end
 struct Safe <: CheckStyle end
