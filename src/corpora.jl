@@ -2,18 +2,17 @@
 @kwdef struct Corpus
 	source::Vector{String}
 	ω::Vector{String}
-	ωmap = Dict(w => i for (i, w) in enumerate(ω))
-	occurrences::Lazy.LazyList
+	occurrences::NamedVector{BitVector}
 	V::Int = length(ω)
 	N::Int = V == 0 ? 0 : length(source)
-	f::Ref{Union{Nothing, Vector{Int}}} = nothing
+	f::Ref{Union{Nothing, NamedVector{Int}}} = nothing
 	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing
 	m::Ref{Union{Nothing, Vector{Int}}} = nothing
 	M::Ref{Union{Nothing, Int}} = nothing
 end
 
 function f(c::Corpus)
-	isnothing(c.f[]) && (c.f[] = [sum(x) for x in c.occurrences])
+	isnothing(c.f[]) && (c.f[] = NamedArray([sum(x) for x in c.occurrences], ω(c)))
 	return c.f[]
 end
 
@@ -34,7 +33,7 @@ end
 
 function Corpus(v::Vector{String})
 	ω = unique(v)
-	occurrences = Lazy.@lazy [v .== w for w in ω]
+	occurrences = NamedArray([v .== w for w in ω], ω)
 	return Corpus(source = v, ω = ω, occurrences = occurrences)
 end
 
@@ -43,12 +42,12 @@ function Base.getindex(
 	) where T <: Integer
 	source = c.source[rng]
 	ω = unique(source)
-	occurrences = Lazy.@lazy [c.occurrences[i][rng] for i in eachindex(ω)]
+	occurrences = NamedArray([c.occurrences[w][rng] for w in ω], ω)
 	return Corpus(source = source, ω = ω, occurrences = occurrences)
 end
 
 function Base.getindex(c::Corpus, w::Union{String, Vector{String}})
-	return c.occurrences[c.ωmap[w]]
+	return c.occurrences[w]
 end
 
 function StatsBase.sample(c::Corpus, args...; kwargs...)
@@ -61,7 +60,7 @@ function StatsBase.sample(c::Corpus)
 	return c[inds]
 end
 
-Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
+Base.occursin(w::String, c::Corpus) = haskey(c.occurrences.dicts[1], w)
 
 function Base.:(==)(c1::Corpus, c2::Corpus)
 	return ω(c1) == ω(c2) && occurrences(c1) == occurrences(c2)

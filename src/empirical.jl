@@ -16,7 +16,7 @@ f(w::String, c::Corpus) = f(Fast(), w, c)
 
 # "fast" variants of f(...) by default
 f(::Fast, i::Int, c::Corpus) = f(c)[i]
-f(::Fast, w::String, c::Corpus) = f(c)[c.ωmap[w]]
+f(::Fast, w::String, c::Corpus) = f(c)[w]
 
 # "safe" variants of f(...) check whether the requested item is in the lexicon or not
 f(::Safe, i::Int, c::Corpus) = i <= V(c) ? f(Fast(), i, c) : 0
