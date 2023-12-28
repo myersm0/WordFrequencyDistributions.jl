@@ -13,7 +13,7 @@ struct Fast <: CheckStyle end
 export CheckStyle, Safe, Fast
 
 include("corpora.jl")
-export Corpus, getindex, sample, occursin, occurrences
+export Corpus, getindex, sample, occursin, occurrences, f, m, M, spectrum
 
 include("zipf.jl")
 export ZipfRank
