@@ -33,6 +33,8 @@ subsets = [
 	@test V(1, c) == length(consonants)
 	@test V(21, c) == length(vowels)
 
+	@test all(occurrences(letter, c) == (text .== letter) for letter in alphabet)
+
 	for inds in subsets
 		c′ = c[inds]
 		@test c′ == Corpus(text[inds])

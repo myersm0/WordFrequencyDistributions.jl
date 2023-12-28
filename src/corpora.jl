@@ -37,6 +37,6 @@ function Base.:(==)(c1::Corpus, c2::Corpus)
 	return ω(c1) == ω(c2) && c1.occurrences == c2.occurrences
 end
 
-
+occurrences(w::String, c::Corpus) = c.occurrences[w]
 
 
