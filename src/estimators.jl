@@ -3,10 +3,15 @@ abstract type Estimator end
 
 # ===== Zipfian smoothers =====
 abstract type ZipfianEstimator <: Estimator end
+struct Zipf <: ZipfianEstimator end
 struct GaleSampson <: ZipfianEstimator end
 struct NaranBalasub <: ZipfianEstimator end
 
 function V(::ZipfianEstimator, m::Int, c::Corpus; kwargs...) end
+
+function V(::Zipf, m::Int, c::Corpus)
+	return V(N) / (m * (m + 1))
+end
 
 "Gale and Sampson (1.12)"
 function V(::GaleSampson, m::Int, c::Corpus)
