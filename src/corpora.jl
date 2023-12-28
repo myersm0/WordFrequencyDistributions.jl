@@ -35,6 +35,11 @@ function StatsBase.sample(c::Corpus, args...; kwargs...)
 	return c[inds]
 end
 
+function StatsBase.sample(c::Corpus)
+	inds = sample(1:N(c), N(c); replace = false)
+	return c[inds]
+end
+
 Base.occursin(w::String, c::Corpus) = haskey(c.occurrences.dicts[1], w)
 
 function Base.:(==)(c1::Corpus, c2::Corpus)
