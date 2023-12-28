@@ -78,10 +78,7 @@ function intervals(c::Corpus; nsteps = 20)
 end
 
 function Base.show(io::IO, mime::MIME"text/plain", c::Corpus)
-	println("OK")
+	print(io, "Corpus with $(N(c)) tokens, $(V(c)) types")
 end
-
-
-
 
 
