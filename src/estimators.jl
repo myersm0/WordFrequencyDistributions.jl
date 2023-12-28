@@ -11,7 +11,7 @@ function V(::ZipfianEstimator, m::Int, c::Corpus; kwargs...) end
 "Gale and Sampson (1.12)"
 function V(::GaleSampson, m::Int, c::Corpus)
 	mp(m::Int, c::Corpus) = c.m[findfirst(0 .< c.m .< m)]
-	mf(m::Int, c::Corpus) = c.m[findfirst(0 .< c.m .< m)]
+	mf(m::Int, c::Corpus) = c.m[findfirst(0 .> c.m .> m)]
 	m == 1 && return V(1, c)
 	m == c.M && return 2V(m, c) / (2m - mp(m, c))
 	return 2V(m, c) / (mf(m, c) - mp(m, c))
@@ -36,7 +36,7 @@ function C(::CharacteristicEstimator, c::Corpus; kwargs...) end
 
 "Yule (1.15)"
 function C(::Yule, c::Corpus)
-	return 1e4 * sum(m^2 * V(m, c) - N(c) for m in findall(c.spectrum .> 0)) / N(c)^2
+	return 1e4 * sum(m^2 * V(m, c) - N(c) for m in c.m) / N(c)^2
 end
 
 "Simpson (1.16)"
