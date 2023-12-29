@@ -5,10 +5,9 @@
 	occurrences::NamedVector{BitVector}
 	V::Int = length(ω)
 	N::Int = V == 0 ? 0 : length(source)
-	f::Ref{Union{Nothing, NamedVector{Int}}} = nothing
-	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing
-	m::Ref{Union{Nothing, Vector{Int}}} = nothing
-	M::Ref{Union{Nothing, Int}} = nothing
+	f::Ref{Union{Nothing, NamedVector{Int}}} = nothing   # occurence counts for each type
+	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing # a tabulation of occurrence counts
+	m⃗::Ref{Union{Nothing, Vector{Int}}} = nothing        # the indices of non-zero spectra
 end
 
 function f(c::Corpus)
@@ -21,14 +20,13 @@ function spectrum(c::Corpus)
 	return c.spectrum[]
 end
 
-function m(c::Corpus)
-	isnothing(c.m[]) && (c.m[] = findall(spectrum(c) .!= 0))
-	return c.m[]
+function m⃗(c::Corpus)
+	isnothing(c.m⃗[]) && (c.m⃗[] = findall(spectrum(c) .!= 0))
+	return c.m⃗[]
 end
 
 function M(c::Corpus)
-	isnothing(c.M[]) && (c.M[] = m(c)[end])
-	return c.M[]
+	return m⃗(c)[end]
 end
 
 function Corpus(v::Vector{String})
