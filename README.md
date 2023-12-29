@@ -1,13 +1,11 @@
 # WordFrequencyDistributions
 A Julia implementation of some of the techniques for estimating and analyzing word frequency statistics, from R. Harald Baayen's book _Word Frequency Distributions_ (Springer, 1996).
 
-Operations center around the `Corpus` struct, which was designed to provide balanced performance over a range of operations that the book discusses:
-- Initializing a `Corpus` from a `Vector{String}`, including calculation of the frequency counts for each word in its vocabulary
-- Subsetting or sampling a `Corpus` to capture its frequency characteristics only within a certain range or over a random set of indices
+Operations center around the `Corpus` struct, which was designed to provide excellent performance over a range of operations that the book discusses.
 
 A `Corpus` may be a single text (the text of a novel, for example) or a collection of documents. However, in either case, the words are simply stored as a single homogenous entity, and the document divisions (if any) are not recoverable or of interest.
 
-Function and field names were chosen as a compromise between fidelity to Baayen's notation in the book, and the goal of having a sensible, consistent interface to all the functions. The main exception is where the book names something like `V(N)` (the size of the vocabulary in a corpus of N words), in this package I implement that as `V(c::Corpus)`, where the corpus `c` encapsulates `N`. To evaluate `V()` on a smaller sample, such as on the first 1000 words of `c`, you would subset your corpus like this:
+Function and field names were chosen as a compromise between fidelity to Baayen's notation in the book, and the goal of having a nice, consistent interface to all the functions. The main exception is where the book names something like `V(N)` (the size of the vocabulary in a corpus of N words); in this package, I implement that as `V(c::Corpus)`, where the corpus `c` encapsulates `N`, among other things. To evaluate `V()` on a smaller sample, such as on the first 1000 words of `c`, you would subset your corpus like this:
 ```
 smaller_corpus = c[1:1000]
 V(smaller_corpus)
@@ -19,14 +17,7 @@ If you have a vector of strings called `text` (e.g. tokenized from a document), 
 c = Corpus(text)
 ```
 
-To generate another corpus that's just the first 1000 tokens of `text`:
-```
-smaller_corpus = c[1:1000]
-```
-
-The above is done at minimal cost because it's able to reuse already-computed occurrence vectors from the original, full `Corpus`.
-
-For sample and population statistics relating to your corpus, the general pattern of functions offered is as follows: `𝑓([::Estimator,] args...; kwargs...)`. If you omit the first argument, an `Estimator`, then the operation is performed empirically on the observed sample. Otherwise, you may supply an `Estimator` for which a smoothing or population estimation method is defined. Here are a few different ways to compute the number of distinct tokens (types) that occur exactly once in a corpus.
+For sample and population statistics relating to your corpus, the general pattern of functions offered is as follows: `𝑓([::Estimator,] args...; kwargs...)`. If you omit the first argument, an `Estimator`, then the operation is performed empirically on the observed sample. Otherwise, you may supply an `Estimator` for which an estimation method is defined. Here are a few different ways to compute the number of distinct tokens (types) that occur exactly once in a corpus `c`.
 ```
 # actual value in the observed sample:
 V(1, c)
