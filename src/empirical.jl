@@ -16,7 +16,7 @@ f(w::String, c::Corpus) = f(Fast(), w, c)
 
 # "fast" variants of f(...) by default
 f(::Fast, i::Int, c::Corpus) = f(c)[i]
-f(::Fast, w::String, c::Corpus) = f(c)[w]
+f(::Fast, w::String, c::Corpus) = f(c)[c.ωmap[w]]
 
 # "safe" variants of f(...) check whether the requested item is in the lexicon or not
 f(::Safe, i::Int, c::Corpus) = i <= V(c) ? f(Fast(), i, c) : 0
@@ -37,8 +37,8 @@ p(::Safe, i::Int, c::Corpus) = f(Safe(), i, c) / N(c)
 p(::Safe, w::String, c::Corpus) = f(Safe(), w, c) / N(c)
 
 # BitVector alternatives for f and p, e.g. when working with a single occurrence vector
-f(x::BitVector) = sum(x)
-p(x::BitVector) = f(x) / length(x)
+f(x::AbstractVector) = sum(x)
+p(x::AbstractVector) = f(x) / length(x)
 
 "Get the empirical structural type distribution for the `i`th spectrum element in the corpus."
 g(m::Int, c::Corpus) = m > M(c) ? 0 : sum(spectrum(c)[m:end])

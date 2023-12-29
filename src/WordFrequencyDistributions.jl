@@ -1,10 +1,10 @@
 
 module WordFrequencyDistributions
 
-using NamedArrays
 using StatsBase
 using Match
 using Chain
+import SparseArrays
 import Lazy
 
 abstract type CheckStyle end

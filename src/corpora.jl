@@ -2,16 +2,17 @@
 @kwdef struct Corpus
 	source::Vector{String}
 	ω::Vector{String}
-	occurrences::NamedVector{BitVector}
+	occurrences::SparseArrays.SparseMatrixCSC{Bool}
+	ωmap::Dict{String, Int} = Dict(w => i for (i, w) in enumerate(ω))
 	V::Int = length(ω)
 	N::Int = V == 0 ? 0 : length(source)
-	f::Ref{Union{Nothing, NamedVector{Int}}} = nothing   # occurence counts for each type
+	f::Ref{Union{Nothing, Vector{Int}}} = nothing   # occurence counts for each type
 	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing # a tabulation of occurrence counts
 	m⃗::Ref{Union{Nothing, Vector{Int}}} = nothing        # the indices of non-zero spectra
 end
 
 function f(c::Corpus)
-	isnothing(c.f[]) && (c.f[] = NamedArray([sum(x) for x in c.occurrences], ω(c)))
+	isnothing(c.f[]) && (c.f[] = sum(c.occurrences; dims = 2)[:])
 	return c.f[]
 end
 
@@ -29,10 +30,14 @@ function M(c::Corpus)
 	return m⃗(c)[end]
 end
 
-function Corpus(v::Vector{String})
-	ω = unique(v)
-	occurrences = NamedArray([v .== w for w in ω], ω)
-	return Corpus(source = v, ω = ω, occurrences = occurrences)
+function Corpus(source::Vector{String})
+	ω = unique(source)
+	V = length(ω)
+	N = length(source)
+	ωmap = Dict(w => i for (i, w) in enumerate(ω))
+	word_indices = [ωmap[w] for w in source]
+	occurrences = SparseArrays.sparse(word_indices, 1:N, trues(N))
+	return Corpus(source = source, ω = ω, occurrences = occurrences)
 end
 
 function Base.getindex(
@@ -40,12 +45,17 @@ function Base.getindex(
 	) where T <: Integer
 	source = c.source[rng]
 	ω = unique(source)
-	occurrences = NamedArray([c.occurrences[w][rng] for w in ω], ω)
+	w_indices = [c.ωmap[w] for w in ω]
+	occurrences = c.occurrences[w_indices, rng]
 	return Corpus(source = source, ω = ω, occurrences = occurrences)
 end
 
-function Base.getindex(c::Corpus, w::Union{String, Vector{String}})
-	return c.occurrences[w]
+function Base.getindex(c::Corpus, w::String)
+	return c.occurrences[c.ωmap[w], :]
+end
+
+function Base.getindex(c::Corpus, w⃗::Vector{String})
+	return c.occurrences[[c.ωmap[w] for w in w⃗], :]
 end
 
 function StatsBase.sample(c::Corpus, args...; kwargs...)
@@ -58,7 +68,7 @@ function permute(c::Corpus)
 	return c[inds]
 end
 
-Base.occursin(w::String, c::Corpus) = haskey(c.occurrences.dicts[1], w)
+Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
 
 function Base.:(==)(c1::Corpus, c2::Corpus)
 	return c1.source == c2.source
