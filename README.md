@@ -29,7 +29,7 @@ V(GaleSampson(), 1, c)
 V(BinomialEstimator(), 1, c)
 ```
 
-Below I demonstrate creation of a figure similar to one that Baayen shows in Chapter 1. Here we are using the relative sample frequency `p` of the word "the" in the text, as observed in 20 intervals of increasing size, along with Monte Carlo confidence intervals generated from 1000 random permutations of the text:
+Below I demonstrate creation of a figure similar to one that Baayen shows in Chapter 1. Here we are using the relative sample frequency `p` of the word "the" in the text, as observed in 20 intervals of increasing size, along with Monte Carlo 95% confidence bounds (shown by dotted lines) generated from 1000 random permutations of the text:
 ```
 using GLMakie
 using StatsBase: quantile
@@ -47,13 +47,13 @@ Threads.@threads for i in 1:ntrials
 	permuted_p[:, i] .= map(N -> p(c′[w][1:N]), break_pts)
 end
 
-conf_intervals = map(x -> quantile(x, (0.05, 0.95)), eachrow(permuted_p))
+conf_intervals = map(x -> quantile(x, (0.025, 0.975)), eachrow(permuted_p))
 
 fig = Figure()
 ax = Axis(fig[1, 1])
 scatter!(ax, break_pts, observed_p; color = :black)
-lines!(ax, break_pts, [first(x) for x in conf_intervals]; color = :black, linestyle = :dot)
-lines!(ax, break_pts, [last(x) for x in conf_intervals]; color = :black, linestyle = :dot)
+lines!(ax, break_pts, first.(conf_intervals); color = :black, linestyle = :dot)
+lines!(ax, break_pts, last.(conf_intervals); color = :black, linestyle = :dot)
 ```
 
 ![demo1](https://github.com/myersm0/WordFrequencyDistributions.jl/blob/main/examples/demo1.png)
