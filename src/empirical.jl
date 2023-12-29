@@ -36,7 +36,7 @@ p(::Fast, w::String, c::Corpus) = f(w, c) / N(c)
 p(::Safe, i::Int, c::Corpus) = f(Safe(), i, c) / N(c)
 p(::Safe, w::String, c::Corpus) = f(Safe(), w, c) / N(c)
 
-# BitVector alternatives for f and p
+# BitVector alternatives for f and p, e.g. when working with a single occurrence vector
 f(x::BitVector) = sum(x)
 p(x::BitVector) = f(x) / length(x)
 

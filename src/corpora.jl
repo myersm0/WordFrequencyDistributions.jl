@@ -61,7 +61,7 @@ end
 Base.occursin(w::String, c::Corpus) = haskey(c.occurrences.dicts[1], w)
 
 function Base.:(==)(c1::Corpus, c2::Corpus)
-	return ω(c1) == ω(c2) && occurrences(c1) == occurrences(c2)
+	return c1.source == c2.source
 end
 
 occurrences(c::Corpus) = c.occurrences

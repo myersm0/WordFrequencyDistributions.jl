@@ -1,7 +1,7 @@
 
 abstract type Estimator end
 
-# ===== Zipfian smoothers =====
+# ===== Zipfian estimators =====
 abstract type ZipfianEstimator <: Estimator end
 struct Zipf <: ZipfianEstimator end
 struct GaleSampson <: ZipfianEstimator end
@@ -15,11 +15,11 @@ end
 
 "Gale and Sampson (1.12)"
 function V(::GaleSampson, m::Int, c::Corpus)
+	mp(m::Int, c::Corpus) = m⃗(c)[findlast(m⃗(c) .< m)]
+	mf(m::Int, c::Corpus) = m⃗(c)[findfirst(m⃗(c) .> m)]
 	m in m⃗(c) || return NaN
 	m == 1 && return V(1, c)
-	mp(m::Int, c::Corpus) = m⃗(c)[findlast(m⃗(c) .< m)]
 	m == M(c) && return 2V(m, c) / (2m - mp(m, c))
-	mf(m::Int, c::Corpus) = m⃗(c)[findfirst(m⃗(c) .> m)]
 	return 2V(m, c) / (mf(m, c) - mp(m, c))
 end
 
@@ -37,6 +37,7 @@ struct Guiraud <: CharacteristicEstimator end
 struct Sichel <: CharacteristicEstimator end
 struct Honore <: CharacteristicEstimator end
 struct Herdan <: CharacteristicEstimator end
+struct ZipfSize <: CharacteristicEstimator end
 
 function C(::CharacteristicEstimator, c::Corpus; kwargs...) end
 
@@ -69,6 +70,50 @@ end
 function C(::Herdan, c::Corpus; a::Real)
 	return a * N^(log(V(c)) / log(N(c)))
 end
+
+# TODO
+function C(::ZipfSize, c::Corpus) end
+
+# ===== interpolation, extrapolation for population estimates =====
+abstract type ExpectationEstimator <: Estimator end
+struct BinomialExpectation <: ExpectationEstimator end
+struct PoissonExpectation <: ExpectationEstimator end
+struct HypergeometricExpectation <: ExpectationEstimator end
+
+"Expected number of terms with frequency `m` in a corpus of N′ tokens"
+function V(::ExpectationEstimator, c::Corpus; N′::Int) end
+
+"Expected vocabulary size in a corpus of N′ tokens"
+function V(::ExpectationEstimator, m::Int, c::Corpus; N′::Int) end
+
+"(2.41)"
+function V(::BinomialExpectation, m::Int, c::Corpus; N′::Int)
+	ratio = N′ / N(c)
+	ratio < 1 || error(DomainError)
+	return sum(
+		V(k, c) * binomial(BigInt(k), m) * ratio^m * (1 - ratio)^(k - m) 
+		for k in filter(k -> k >= m, m⃗(c))
+	)
+end
+
+"(2.42)"
+function V(::BinomialExpectation, c::Corpus; N′::Int)
+	ratio = N′ / N(c)
+	ratio < 1 || error(DomainError)
+	return V(c) - sum(V(m, c) * (1 - ratio)^m for m in m⃗(c))
+end
+
+"(2.53)"
+function V(::PoissonExpectation, c::Corpus; N′::Int)
+	return sum(1 - exp(-N(c) * p(i, c)) for i in 1:ω(c))
+end
+
+# TODO
+# Ρ (growth rate, 2.20)
+# CL (coef. of loss, 2.26)
+# Good-Turing (2.27, 2.36 - 2.37)
+
+
 
 
 
