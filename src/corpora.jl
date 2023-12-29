@@ -1,11 +1,11 @@
 
-@kwdef struct Corpus
-	source::Vector{String}
+@kwdef struct Corpus{T <: Integer}
+	source::Vector{T}
 	ω::Vector{String}
-	occurrences::SparseArrays.SparseMatrixCSC{Bool}
-	ωmap::Dict{String, Int} = Dict(w => i for (i, w) in enumerate(ω))
+	occurrences::SparseArrays.SparseMatrixCSC{Bool, T}
+	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	V::Int = length(ω)
-	N::Int = V == 0 ? 0 : length(source)
+	N::Int = length(source)
 	f::Ref{Union{Nothing, Vector{Int}}} = nothing   # occurence counts for each type
 	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing # a tabulation of occurrence counts
 	m⃗::Ref{Union{Nothing, Vector{Int}}} = nothing        # the indices of non-zero spectra
@@ -30,24 +30,26 @@ function M(c::Corpus)
 	return m⃗(c)[end]
 end
 
-function Corpus(source::Vector{String})
-	ω = unique(source)
+function Corpus{T}(text::Vector{String}) where T <: Integer
+	ω = unique(text)
 	V = length(ω)
-	N = length(source)
-	ωmap = Dict(w => i for (i, w) in enumerate(ω))
-	word_indices = [ωmap[w] for w in source]
+	N = length(text)
+	ωmap = Dict{String, T}(w => i for (i, w) in enumerate(ω))
+	word_indices = [ωmap[w] for w in text]
 	occurrences = SparseArrays.sparse(word_indices, 1:N, trues(N))
-	return Corpus(source = source, ω = ω, occurrences = occurrences)
+	return Corpus{T}(source = word_indices, ω = ω, occurrences = occurrences)
 end
 
+Corpus(text::Vector{String}) = Corpus{Int32}(text)
+
 function Base.getindex(
-		c::Corpus, rng::Union{AbstractVector{T}, AbstractRange{T}}
+		c::Corpus{T}, rng::Union{AbstractVector{<: Integer}, AbstractRange{<: Integer}}
 	) where T <: Integer
 	source = c.source[rng]
-	ω = unique(source)
-	w_indices = [c.ωmap[w] for w in ω]
+	w_indices = unique(source)
+	ω = c.ω[w_indices]
 	occurrences = c.occurrences[w_indices, rng]
-	return Corpus(source = source, ω = ω, occurrences = occurrences)
+	return Corpus{T}(source = source, ω = ω, occurrences = occurrences)
 end
 
 function Base.getindex(c::Corpus, w::String)
@@ -71,7 +73,7 @@ end
 Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
 
 function Base.:(==)(c1::Corpus, c2::Corpus)
-	return c1.source == c2.source
+	return sort(c1.source) == sort(c2.source)
 end
 
 occurrences(c::Corpus) = c.occurrences
