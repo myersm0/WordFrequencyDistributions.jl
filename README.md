@@ -21,10 +21,22 @@ c = Corpus(text)
 
 To generate another corpus that's just the first 1000 tokens of `text`:
 ```
-c[1:1000]
+smaller_corpus = c[1:1000]
 ```
 
 The above is done at minimal cost because it's able to reuse already-computed occurrence vectors from the original, full `Corpus`.
+
+For sample and population statistics relating to your corpus, the general pattern of functions offered is as follows: `𝑓([::Estimator,] args...; kwargs...)`. If you omit the first argument, an `Estimator`, then the operation is performed empirically on the observed sample. Otherwise, you may supply an `Estimator` for which a smoothing or population estimation method is defined. Here are a few different ways to compute the number of distinct tokens (types) that occur exactly once in a corpus.
+```
+# actual value in the observed sample:
+V(1, c)
+
+# Gale and Sampson's Zipfian smoother to derive a theoretical value of V(1, c):
+V(GaleSampson(), 1, c)
+
+# binomial estimate for the expected value of V(1, c):
+V(BinomialEstimator(), 1, c)
+```
 
 Below I demonstrate creation of a figure similar to one that Baayen shows in Chapter 1. Here we are using the relative sample frequency `p` of the word "the" in the text, as observed in 20 intervals of increasing size, along with Monte Carlo confidence intervals generated from 1000 random permutations of the text:
 ```
