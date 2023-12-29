@@ -78,7 +78,6 @@ function C(::ZipfSize, c::Corpus) end
 abstract type ExpectationEstimator <: Estimator end
 struct BinomialExpectation <: ExpectationEstimator end
 struct PoissonExpectation <: ExpectationEstimator end
-struct HypergeometricExpectation <: ExpectationEstimator end
 
 "Expected number of terms with frequency `m` in a corpus of N′ tokens"
 function V(::ExpectationEstimator, c::Corpus; N′::Int) end

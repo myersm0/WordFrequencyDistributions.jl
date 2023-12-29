@@ -22,7 +22,9 @@ include("empirical.jl")
 export ω, V, N, f, p, g
 
 include("estimators.jl")
-export GaleSampson, NaranBalasub, Yule, Simpson, Guiraud, Sichel, Honore, Herdan
-export C
+export ZipfianEstimator, Zipf, GaleSampson, NaranBalasub
+export CharacteristicEstimator, Yule, Simpson, Guiraud, Sichel, Honore, Herdan, ZipfSize
+export ExpectationEstimator, BinomialExpectation, PoissonExpectation
 
 end
+
