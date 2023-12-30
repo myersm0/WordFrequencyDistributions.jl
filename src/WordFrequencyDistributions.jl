@@ -23,7 +23,7 @@ include("estimators.jl")
 export ZipfianEstimator, Zipf, GaleSampson, NaranBalasub
 export CharacteristicEstimator, Yule, Simpson, Guiraud, Sichel, Honore, Herdan, ZipfSize
 export ExpectationEstimator, BinomialExpectation, PoissonExpectation, SampleExpectation, GoodTuring
-export CL, Ρ
+export CL, P
 
 end
 

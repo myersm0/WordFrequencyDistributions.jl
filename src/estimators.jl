@@ -121,7 +121,7 @@ function CL(c::Corpus)
 end
 
 "Vocabulary growth rate (section 2.5)"
-function Ρ(estimator::ExpectationEstimator, c::Corpus; kwargs...)
+function P(estimator::ExpectationEstimator, c::Corpus; kwargs...)
 	return V(estimator, 1, c; kwargs...) / N(c)
 end
 
