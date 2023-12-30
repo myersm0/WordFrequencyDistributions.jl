@@ -67,7 +67,7 @@ lines!(ax, break_pts, last.(conf_intervals); color = :black, linestyle = :dot)
 ![demo1](https://github.com/myersm0/WordFrequencyDistributions.jl/blob/main/examples/demo1.png)
 
 In this example we're only interested in one word, "the". But the main advantage of this package comes when you have a larger set of words that are of interest, or if you want do something with occurrence counts from the whole vocabulary. 
-For example, the function call `V(1, c)` supplied by this package is more than 100x faster than doing the equivalent operation on a `Vector{String} text`:
+For example, the function call `V(1, c)` supplied by this package is more than 10x faster than doing the equivalent operation on a `Vector{String} text`:
 ```
 V(1, c)                           #  750 ns (on first execution; faster after that)
 sum(values(countmap(text)) .== 1) # 8174 ns
