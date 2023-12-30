@@ -6,7 +6,7 @@
 	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	V::T = length(ω)
 	N::T = length(source)
-	f::Ref{Union{Nothing, Vector{T}}} = nothing   # occurence counts for each type
+	f::Ref{Union{Nothing, Vector{T}}} = nothing        # occurence counts for each type
 	spectrum::Ref{Union{Nothing, Vector{T}}} = nothing # a tabulation of occurrence counts
 	m⃗::Ref{Union{Nothing, Vector{T}}} = nothing        # the indices of non-zero spectra
 end
@@ -62,20 +62,14 @@ function Base.getindex(c::Corpus, w⃗::Vector{String})
 end
 
 function StatsBase.sample(c::Corpus, args...; kwargs...)
-	inds = sample(1:N(c), args...; kwargs...)
-	return c[inds]
+	return c[sample(1:N(c), args...; kwargs...)]
 end
 
 function permute(c::Corpus)
-	inds = sample(1:N(c), N(c); replace = false)
-	return c[inds]
+	return sample(c, N(c); replace = false)
 end
 
 Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
-
-function Base.:(==)(c1::Corpus, c2::Corpus)
-	return sort(c1.source) == sort(c2.source)
-end
 
 occurrences(c::Corpus) = c.occurrences
 occurrences(w::String, c::Corpus) = c[w]
