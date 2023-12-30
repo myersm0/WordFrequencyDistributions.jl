@@ -58,6 +58,8 @@ lines!(ax, break_pts, first.(conf_intervals); color = :black, linestyle = :dot)
 lines!(ax, break_pts, last.(conf_intervals); color = :black, linestyle = :dot)
 ```
 
+![demo1](https://github.com/myersm0/WordFrequencyDistributions.jl/blob/main/examples/demo1.png)
+
 This actually is not the most efficient way to do this, however, mainly because the line `c′ = permute(c)`, though it's quite fast at what it does, is doing some extra work such as setting up occurrence vectors for all of its words. Since we're only interested in one word, "the", in this case, the loop could be rewritten like this:
 ```
 # 1.5 seconds for text of 27k words
@@ -76,9 +78,6 @@ sum(values(countmap(text)) .== 1) # 8174 ns
 ```
 
 Not only that, but calling `V(1, c)` (or similar) caches the results for the whole frequency spectrum so that later calls reduce to 32 ns.
-
-
-![demo1](https://github.com/myersm0/WordFrequencyDistributions.jl/blob/main/examples/demo1.png)
 
 [![Build Status](https://github.com/myersm0/WordFrequencyDistributions.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/WordFrequencyDistributions.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
