@@ -4,11 +4,11 @@
 	ω::Vector{String}
 	occurrences::SparseArrays.SparseMatrixCSC{Bool, T}
 	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
-	V::Int = length(ω)
-	N::Int = length(source)
-	f::Ref{Union{Nothing, Vector{Int}}} = nothing   # occurence counts for each type
-	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing # a tabulation of occurrence counts
-	m⃗::Ref{Union{Nothing, Vector{Int}}} = nothing        # the indices of non-zero spectra
+	V::T = length(ω)
+	N::T = length(source)
+	f::Ref{Union{Nothing, Vector{T}}} = nothing   # occurence counts for each type
+	spectrum::Ref{Union{Nothing, Vector{T}}} = nothing # a tabulation of occurrence counts
+	m⃗::Ref{Union{Nothing, Vector{T}}} = nothing        # the indices of non-zero spectra
 end
 
 function f(c::Corpus)
@@ -40,7 +40,7 @@ function Corpus{T}(text::Vector{String}) where T <: Integer
 	return Corpus{T}(source = word_indices, ω = ω, occurrences = occurrences)
 end
 
-Corpus(text::Vector{String}) = Corpus{Int32}(text)
+Corpus(text::Vector{String}) = Corpus{UInt32}(text)
 
 function Base.getindex(
 		c::Corpus{T}, rng::Union{AbstractVector{<: Integer}, AbstractRange{<: Integer}}
@@ -80,8 +80,8 @@ occurrences(c::Corpus) = c.occurrences
 occurrences(w::String, c::Corpus) = c[w]
 
 "Get `nsteps` equispaced points from 1 to N(c::Corpus)`."
-function intervals(c::Corpus; nsteps = 20)
-	step_size = Int(round(N(c) / nsteps))
+function intervals(c::Corpus{T}; nsteps = 20) where T
+	step_size = T(round(N(c) / nsteps))
 	rng = range(step_size, step_size * nsteps, nsteps) |> collect .|> Int
 	rng[end] = N(c)
 	return rng
