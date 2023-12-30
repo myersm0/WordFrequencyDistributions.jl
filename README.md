@@ -31,7 +31,7 @@ V(GaleSampson(), 1, c)
 V(BinomialEstimator(), 1, c)
 ```
 
-Below I demonstrate creation of a figure similar to one that Baayen shows in Chapter 1. Here we are using the relative sample frequency `p` of the word "the" in the text, as observed in 20 intervals of increasing size, along with Monte Carlo 95% confidence bounds (shown by dotted lines) generated from 1000 random permutations of the text:
+Below I demonstrate creation of a figure similar to one that Baayen shows in Chapter 1. Here we are using the relative sample frequency `p` of the word "the" in the text, as observed in 20 intervals of increasing size, along with Monte Carlo 95% confidence bounds (shown by dotted lines) generated from 5000 random permutations of the text:
 ```
 using GLMakie
 using StatsBase: quantile
@@ -44,9 +44,9 @@ observed_p = map(N -> p(c[w][1:N]), break_pts)
 
 ntrials = 1000
 permuted_p = zeros(nsteps, ntrials)
-Threads.@threads for i in 1:ntrials
-	c′ = permute(c)
-	permuted_p[:, i] .= map(N -> p(c′[w][1:N]), break_pts)
+for i in 1:ntrials
+    c′ = permute(c)
+    permuted_p[:, i] .= [p(c′[w][1:N]) for N in break_pts]
 end
 
 conf_intervals = map(x -> quantile(x, (0.025, 0.975)), eachrow(permuted_p))
@@ -57,6 +57,26 @@ scatter!(ax, break_pts, observed_p; color = :black)
 lines!(ax, break_pts, first.(conf_intervals); color = :black, linestyle = :dot)
 lines!(ax, break_pts, last.(conf_intervals); color = :black, linestyle = :dot)
 ```
+
+This actually is not the most efficient way to do this, however, mainly because the line `c′ = permute(c)`, though it's quite fast at what it does, is doing some extra work such as setting up occurrence vectors for all of its words. Since we're only interested in one word, "the", in this case, the loop could be rewritten like this:
+```
+# 1.5 seconds for text of 27k words
+for i in 1:ntrials
+    temp = sample(c[w], N(c); replace = false)
+    permuted_p[:, i] .= [p(temp[1:N]) for N in break_pts]
+end
+```
+
+Even this is only marginally faster than a naive approach of simply shuffling the origin `Vector{String} text` and doing `[sum(text[1:N] .== w) / N for N in break_pts]` on it. The main advantage of this package comes when you have a larger set of words that are of interest, or if you want do something with occurrence counts from the whole vocabulary. 
+
+For example, the function call `V(1, c)` supplied by this package is more than 100x faster than doing the equivalent operation on a `Vector{String} text`:
+```
+V(1, c)                           #  750 ns (on first execution; faster after that)
+sum(values(countmap(text)) .== 1) # 8174 ns
+```
+
+Not only that, but calling `V(1, c)` (or similar) caches the results for the whole frequency spectrum so that later calls reduce to 32 ns.
+
 
 ![demo1](https://github.com/myersm0/WordFrequencyDistributions.jl/blob/main/examples/demo1.png)
 
