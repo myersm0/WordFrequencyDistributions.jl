@@ -1,5 +1,5 @@
 # WordFrequencyDistributions
-A Julia implementation of some of the techniques for estimating and analyzing word frequency statistics, from R. Harald Baayen's book _Word Frequency Distributions_ (Springer, 1996).
+A Julia implementation of some of the techniques for estimating and analyzing word frequency statistics, from R. Harald Baayen's book _Word Frequency Distributions_ (Springer, 2001).
 
 Operations center around the `Corpus` struct, which was designed to provide excellent performance over a range of operations that the book discusses.
 
