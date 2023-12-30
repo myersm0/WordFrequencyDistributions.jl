@@ -79,12 +79,14 @@ V(2, c)   # 27 ns; the number of words occurring 2 times
 V(999, c) # 33 ns; the number of words occurring 999 times
 ```
 
-## Comparison to ZipfR
-The R language already offers an excellent package, zipfR, for the same things implemented here. With this package, I wanted to see if I could improve on the performance (in terms of both speed and capacity for handling large corpora).
+## Performance notes and comparison to ZipfR
+There's already an excellent package in the R language for the things implemented here (and more), [zipfR](http://zipfr.r-forge.r-project.org). With the current package, I wanted to see if I could improve on the performance in terms of both speed and capacity for handling large corpora.
 
-I found two things. One, the performance of zipfR is already excellent. Two, it's hard to compare the two packages directly, because use cases can differ so much. For example:
+I found two things. One, the performance of zipfR is already excellent. Two, it's hard to compare the two packages directly, because they operate very differently and because use cases can differ so much. For example:
 - for initialization of a corpus of 27k tokens, I get a 1.97 ms initialization time in this package, compared to 6.16 ms with zipfR. For larger corpora however, zipfR comes out ahead
 - this package comes out ahead in subsetting and sampling operations (e.g. for subsetting and computing occurrence statistics for the first 1000 tokens of `c`, I get 31 μs in this package versus 588 μs in zipfR; performance gains in this respect are similar for random sampling and for larger sizes)
+
+The reasons for the performance difference behind both of these examples is the same: this package does more work upfront in constructing the corpus, in order to facilite fast subsetting and sampling later on.
 
 [![Build Status](https://github.com/myersm0/WordFrequencyDistributions.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/WordFrequencyDistributions.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
