@@ -86,6 +86,15 @@ function permute(c::Corpus)
 	return sample(c, N(c); replace = false)
 end
 
+"""
+	 partition(c; nchunks, chunk_size)
+
+Partition `c::Corpus` into a `Vector{Corpus}` of length `nchunks` (by default, 40).
+"""
+function partition(c::Corpus; nchunks::Int = 40, chunk_size::Int = N(c) ÷ nchunks)
+	return [c[((i - 1) * chunk_size + 1):min(N(c), i * chunk_size)] for i in 1:nchunks]
+end
+
 Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
 
 occurrences(c::Corpus) = c.occurrences
