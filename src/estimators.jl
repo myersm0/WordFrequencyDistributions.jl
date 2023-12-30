@@ -121,15 +121,15 @@ function CL(c::Corpus)
 end
 
 "Vocabulary growth rate (section 2.5)"
-function P(estimator::ExpectationEstimator, c::Corpus; kwargs...)
-	return V(estimator, 1, c; kwargs...) / N(c)
+function P(e::ExpectationEstimator, c::Corpus; kwargs...)
+	return V(e, 1, c; kwargs...) / N(c)
 end
 
 "Good-Turing estimate of adjusted sample frequency (2.27)"
-function f(::GoodTuring, estimator::ExpectationEstimator, i::Integer, c::Corpus; kwargs...)
+function f(::GoodTuring, e::ExpectationEstimator, i::Integer, c::Corpus; kwargs...)
 	m = f(i, c)
 	m < M(c) || error("Good-Turing doesn't work on the token with Zipf rank 1")
-	return (m + 1) * V(estimator, m + 1, c; kwargs...) / V(estimator, m, c; kwargs...)
+	return (m + 1) * V(e, m + 1, c; kwargs...) / V(e, m, c; kwargs...)
 end
 
 
