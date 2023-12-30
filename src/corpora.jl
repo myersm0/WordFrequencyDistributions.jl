@@ -31,16 +31,17 @@ function M(c::Corpus)
 end
 
 function Corpus{T}(text::Vector{String}) where T <: Integer
+	N = length(text)
+	N <= typemax(T) || error("Token count exceeds typemax for Corpus{$(T)}")
 	ω = unique(text)
 	V = length(ω)
-	N = length(text)
 	ωmap = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	word_indices = [ωmap[w] for w in text]
 	occurrences = SparseArrays.sparse(word_indices, 1:N, trues(N))
 	return Corpus{T}(source = word_indices, ω = ω, occurrences = occurrences)
 end
 
-Corpus(text::Vector{String}) = Corpus{UInt32}(text)
+Corpus(text::Vector{String}) = Corpus{Int32}(text)
 
 function Base.getindex(
 		c::Corpus{T}, rng::Union{AbstractVector{<: Integer}, AbstractRange{<: Integer}}
