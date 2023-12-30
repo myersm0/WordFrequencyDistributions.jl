@@ -80,14 +80,14 @@ struct BinomialExpectation <: ExpectationEstimator end
 struct PoissonExpectation <: ExpectationEstimator end
 
 "Expected number of terms with frequency `m` in a corpus of N′ tokens"
-function V(::ExpectationEstimator, c::Corpus; N′::Int) end
+function V(::ExpectationEstimator, c::Corpus; n::Int) end
 
 "Expected vocabulary size in a corpus of N′ tokens"
-function V(::ExpectationEstimator, m::Int, c::Corpus; N′::Int) end
+function V(::ExpectationEstimator, m::Int, c::Corpus; n::Int) end
 
 "(2.41)"
-function V(::BinomialExpectation, m::Int, c::Corpus; N′::Int)
-	ratio = N′ / N(c)
+function V(::BinomialExpectation, m::Int, c::Corpus; n::Int)
+	ratio = n / N(c)
 	ratio < 1 || error(DomainError)
 	return sum(
 		V(k, c) * binomial(BigInt(k), m) * ratio^m * (1 - ratio)^(k - m) 
@@ -96,14 +96,14 @@ function V(::BinomialExpectation, m::Int, c::Corpus; N′::Int)
 end
 
 "(2.42)"
-function V(::BinomialExpectation, c::Corpus; N′::Int)
-	ratio = N′ / N(c)
+function V(::BinomialExpectation, c::Corpus; n::Int)
+	ratio = n / N(c)
 	ratio < 1 || error(DomainError)
 	return V(c) - sum(V(m, c) * (1 - ratio)^m for m in m⃗(c))
 end
 
 "(2.53)"
-function V(::PoissonExpectation, c::Corpus; N′::Int)
+function V(::PoissonExpectation, c::Corpus; n::Int)
 	return sum(1 - exp(-N(c) * p(i, c)) for i in 1:ω(c))
 end
 
