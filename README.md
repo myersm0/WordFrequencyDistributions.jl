@@ -17,6 +17,8 @@ If you have a vector of strings called `text` (e.g. tokenized from a document), 
 c = Corpus(text)
 ```
 
+Internally, a `Corpus` stores its data as `UInt32`s by default, which has a range of up to about 4 billion. If you need to store more than 4 billion tokens, you could parametrize the initialization like `Corpus{Int64}(text)`.
+
 For sample and population statistics relating to your corpus, the general pattern of functions offered is as follows: `𝑓([::Estimator,] args...; kwargs...)`. If you omit the first argument, an `Estimator`, then the operation is performed empirically on the observed sample. Otherwise, you may supply an `Estimator` for which an estimation method is defined. Here are a few different ways to compute the number of distinct tokens (types) that occur exactly once in a corpus `c`.
 ```
 # actual value in the observed sample:
