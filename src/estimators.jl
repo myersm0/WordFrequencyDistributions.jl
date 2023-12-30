@@ -104,7 +104,8 @@ end
 
 "(2.53)"
 function V(::PoissonExpectation, c::Corpus; n::Int)
-	return sum(1 - exp(-N(c) * p(i, c)) for i in 1:ω(c))
+	c′ = c[1:n]
+	return sum(1 - exp(-N(c) * p(i, c′)) for i in 1:V(c′))
 end
 
 # TODO
