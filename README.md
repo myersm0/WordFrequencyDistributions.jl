@@ -46,12 +46,12 @@ V(BinomialExpectation(), 1, c; n = 10602)
 A couple of loss functions are implemented, which you can use like this:
 ```
 # set up a couple of higher-order functions which we'll compare below:
-observed = m, c -> V(m, c)
-estimated = m, c -> V(BinomialExpectation(), m, c; n = 10602)
+observed = (m, c) -> V(m, c)
+expected = (m, c) -> V(BinomialExpectation(), m, c; n = 10602)
 
 # calculate the MSE of using the binomial expectation of V(m, c) relative to
 # the actual observed value, over the range of spectrum elements 1 through 15:
-loss(MSE(), c; y = observed, yhat = estimated, spectra = 1:15)
+loss(MSE(), c; y = observed, yhat = expected, spectra = 1:15)
 
 # as above, but use the relative MSE variant, "MSEr" (equation 3.2 from Baayen):
 loss(MSEr(), c; y = observed, yhat = estimated, spectra = 1:15)
