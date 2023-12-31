@@ -38,8 +38,23 @@ V(1, c)
 # Gale and Sampson's Zipfian smoother to derive a theoretical value of V(1, c):
 V(GaleSampson(), 1, c)
 
-# binomial estimate for the expected value of V(1, c):
-V(BinomialEstimator(), 1, c)
+# binomial interpolation for the expected value of V(1, c) in a smaller corpus 
+# of 10,602 tokens:
+V(BinomialExpectation(), 1, c; n = 10602)
+```
+
+A couple of loss functions are implemented, which you can use like this:
+```
+# set up a couple of higher-order functions which we'll compare below:
+observed = m, c -> V(m, c)
+estimated = m, c -> V(BinomialExpectation(), m, c; n = 10602)
+
+# calculate the MSE of using the binomial expectation of V(m, c) relative to
+# the actual observed value, over the range of spectrum elements 1 through 15:
+loss(MSE(), c; y = observed, yhat = estimated, spectra = 1:15)
+
+# as above, but use the relative MSE variant, "MSEr" (equation 3.2 from Baayen):
+loss(MSEr(), c; y = observed, yhat = estimated, spectra = 1:15)
 ```
 
 Below I demonstrate creation of a figure similar to one that Baayen shows in Chapter 1. Here we are using the relative sample frequency `p` of the word "the" in the text, as observed in 20 intervals of increasing size, along with Monte Carlo 95% confidence bounds (shown by dotted lines) generated from 5000 random permutations of the text:
