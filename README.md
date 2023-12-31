@@ -21,8 +21,8 @@ Some basic operations:
 ```
 N(c)        # the number of tokens in `c`
 V(c)        # the number of distinct words (types) in `c`
-V(999, c)   # the number of words in `c` occurring exactly 999 times
-g(999, c)   # the number of words occurring at least 999 times
+V(999, c)   # the number of types in `c` occurring exactly 999 times
+g(999, c)   # the number of types occurring at least 999 times
 spectrum(c) # accessor for the whole frequency spectrum V(m, c)
 ```
 
@@ -66,7 +66,7 @@ A couple of loss functions are implemented, which you can use like this:
 ```
 # set up a couple of higher-order functions which we'll compare below:
 observed = (m, c) -> V(m, c[1:10602])
-expected = (m, c) -> V(BinomialExpectation(), m, c; n = 10602)
+expected = (m, c) -> V(BinomialExpectation(), m, c; t = 10602)
 
 # calculate the MSE of using the binomial expectation of V(m, c) relative to
 # the actual observed value, over the range of spectrum elements 1 through 15:
