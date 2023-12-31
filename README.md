@@ -5,11 +5,17 @@ Operations center around the `Corpus` struct, which was designed to provide exce
 
 A `Corpus` may be a single text (the text of a novel, for example) or a collection of documents. However, in either case, the words are simply stored as a single homogenous entity, and the document divisions (if any) are not recoverable or of interest.
 
-Function and field names were chosen as a compromise between fidelity to Baayen's notation in the book, and the goal of having a nice, consistent interface to all the functions. The main exception is where the book names something like `V(N)` (where N is the number of tokens in a corpus); in this package, I implement that as `V(c::Corpus)`, where the corpus `c` encapsulates `N`, among other things. Also, I apologize for having violated style conventions by using capitals for some function names (V, N, etc), but otherwise I would have had to impose a very different naming scheme of my own invention, and that seemed contrary to my goals here. So, functions in this package are designed to resemble formulae from the book as much as possible.
-
-Another deviation from Baayen's notation is in cases where he names things such as the "characteristic constants" Yule's _K_, Simpson's _D_, Zipf size _Z_, etc. I've instead named these functions all `C` for characteristic constant and provided trait-based dispatch to distinguish them, such as `C(::Yule, args...)` and `C(::Simpson, args...)`, etc, to emphasize their similar nature and to reduce the alphabet-soup aspect of the interface somewhat.
-
 An example application is given in `examples/lexical_specialization.jl`, where I show how these concepts could be used to evaluate document clusters from an unsupervised topic modeling scheme.
+
+## Notation
+Function and field names were chosen as a compromise between fidelity to Baayen's notation in the book, and the goal of having a nice, consistent interface to all the functions. I apologize for having violated style conventions by using capitals for some function names (V, N, etc), but otherwise I would have had to impose a very different naming scheme of my own, and that seemed contrary to my goals here. So, functions in this package are designed to resemble equations from the book as much as possible.
+
+The main exception is where the book names something like `V(N)` (where N is the number of tokens in a corpus); in this package, I implement that as `V(c::Corpus)`, where the corpus `c` encapsulates `N`, among other things.
+
+Another deviation from Baayen's notation is that in cases of interpolation or extrapolation of vocabulary size, Baayen uses N_0 to represent the size of the corpus on which the estimate is conditioned and N for the sample size at which to interpolate or extrapolate. Instead, I let `N` keep its original meaning (the number of tokens in a corpus), and I use `t` (for "text time") to denote the point at the text, measured in tokens, at which to interpolate/extrapolate.
+
+Finally, in cases where Baayen names things such as the "characteristic constants" Yule's _K_, Simpson's _D_, Zipf size _Z_, etc., I've instead named these functions all `C` for characteristic constant and provided trait-based dispatch to distinguish them, such as `C(::Yule, args...)` and `C(::Simpson, args...)`, to emphasize their similar nature and to reduce the alphabet-soup aspect of the interface somewhat.
+
 
 ## Usage
 If you have a vector of strings called `text` (e.g. tokenized from a document), constructing a `Corpus` struct is simple:
