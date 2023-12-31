@@ -89,7 +89,7 @@ function V(::ExpectationEstimator, m::Integer, c::Corpus; t::Integer) end
 
 "(2.41)"
 function V(::BinomialExpectation, m::Integer, c::Corpus; t::Integer)
-	ratio = n / N(c)
+	ratio = t / N(c)
 	return sum(
 		V(k, c) * binomial(BigInt(k), m) * ratio^m * (1 - ratio)^(k - m) 
 		for k in filter(k -> k >= m, m⃗(c))
@@ -98,13 +98,14 @@ end
 
 "(2.42)"
 function V(::BinomialExpectation, c::Corpus; t::Integer)
-	ratio = n / N(c)
+	ratio = t / N(c)
 	return V(c) - sum(V(m, c) * (1 - ratio)^m for m in m⃗(c))
 end
 
 "(2.53)"
 function V(::PoissonExpectation, c::Corpus; t::Integer)
-	c′ = c[1:n]
+	t < N(c) || error ("Interpolation via PoissonExpectation requires t < N(c)")
+	c′ = c[1:t]
 	return sum(1 - exp(-N(c) * p(i, c′)) for i in 1:V(c′))
 end
 
