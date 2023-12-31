@@ -17,6 +17,15 @@ If you have a vector of strings called `text` (e.g. tokenized from a document), 
 c = Corpus(text)
 ```
 
+Some basic operations:
+```
+N(c)        # the number of tokens in `c`
+V(c)        # the number of distinct words (types) in `c`
+V(999, c)   # the number of words in `c` occurring exactly 999 times
+g(999, c)   # the number of words occurring at least 999 times
+spectrum(c) # accessor for the whole frequency spectrum V(m, c)
+```
+
 To evaluate statistics on a smaller sample, such as on the first 1000 words of `c`, you would subset your corpus like this:
 ```
 smaller_corpus = c[1:1000]
@@ -65,14 +74,6 @@ loss(MSE(), c; y = observed, yhat = expected, spectra = 1:15)
 
 # as above, but use the relative MSE variant, "MSEr" (equation 3.2 from Baayen):
 loss(MSEr(), c; y = observed, yhat = expected, spectra = 1:15)
-```
-
-Some more operations:
-```
-V(2, c)     # 27 ns; the number of words occurring 2 times
-V(999, c)   # 33 ns; the number of words occurring 999 times
-spectrum(c) # accessor for the whole frequency spectrum V(m, c)
-g(10, c)    # the number of words occurring at least 10 times
 ```
 
 ## Performance notes and comparison to ZipfR
