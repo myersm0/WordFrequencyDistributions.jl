@@ -26,8 +26,18 @@ N(smaller_corpus) # the total number of words in the reduced corpus (1000)
 
 You can also sample or permute a corpus. The difference is only one of notation; `permute` here is just a complete reordering of the word occurrences. These two operations are the same:
 ```
-sampled_corpus = sample(c, 1:N(c); replace = false)
+sampled_corpus = sample(c, N(c); replace = false)
 permuted_corpus = permute(c)
+```
+
+You can break your corpus up into a vector of 40 smaller ones via:
+```
+chunks = partition(c; nchunks = 40)
+```
+
+A related operation is getting a certain number of equispaced points in the corpus, e.g. 20:
+```
+break_pts = intervals(c; nsteps = 20)
 ```
 
 For sample and population statistics relating to your corpus, the general pattern of functions offered is as follows: `𝑓([::Estimator,] args...; kwargs...)`. If you omit the first argument, an `Estimator`, then the operation is performed empirically on the observed sample. Otherwise, you may supply an `Estimator` for which an estimation method is defined. Here are a few different ways to compute the number of distinct tokens (types) that occur exactly once in a corpus `c`.
@@ -38,15 +48,15 @@ V(1, c)
 # Gale and Sampson's Zipfian smoother to derive a theoretical value of V(1, c):
 V(GaleSampson(), 1, c)
 
-# binomial interpolation for the expected value of V(1, c) in a smaller corpus 
-# of 10,602 tokens:
-V(BinomialExpectation(), 1, c; n = 10602)
+# binomial expectation for the value of V(1, c), conditioned on the full corpus `c` 
+# and interpolated at "text time" t = 10602 (i.e. ~10k words into the corpus):
+V(BinomialExpectation(), 1, c; t = 10602)
 ```
 
 A couple of loss functions are implemented, which you can use like this:
 ```
 # set up a couple of higher-order functions which we'll compare below:
-observed = (m, c) -> V(m, c)
+observed = (m, c) -> V(m, c[1:10602])
 expected = (m, c) -> V(BinomialExpectation(), m, c; n = 10602)
 
 # calculate the MSE of using the binomial expectation of V(m, c) relative to
@@ -54,50 +64,15 @@ expected = (m, c) -> V(BinomialExpectation(), m, c; n = 10602)
 loss(MSE(), c; y = observed, yhat = expected, spectra = 1:15)
 
 # as above, but use the relative MSE variant, "MSEr" (equation 3.2 from Baayen):
-loss(MSEr(), c; y = observed, yhat = estimated, spectra = 1:15)
+loss(MSEr(), c; y = observed, yhat = expected, spectra = 1:15)
 ```
 
-Below I demonstrate creation of a figure similar to one that Baayen shows in Chapter 1. Here we are using the relative sample frequency `p` of the word "the" in the text, as observed in 20 intervals of increasing size, along with Monte Carlo 95% confidence bounds (shown by dotted lines) generated from 5000 random permutations of the text:
-```
-using GLMakie
-using StatsBase: quantile
-
-w = "the"
-
-nsteps = 20
-break_pts = intervals(c; nsteps = nsteps)
-observed_p = map(N -> p(c[w][1:N]), break_pts)
-
-ntrials = 1000
-permuted_p = zeros(nsteps, ntrials)
-for i in 1:ntrials
-    temp = sample(c[w], N(c); replace = false)
-    permuted_p[:, i] .= [p(temp[1:N]) for N in break_pts]]
-end
-
-conf_intervals = map(x -> quantile(x, (0.025, 0.975)), eachrow(permuted_p))
-
-fig = Figure()
-ax = Axis(fig[1, 1])
-scatter!(ax, break_pts, observed_p; color = :black)
-lines!(ax, break_pts, first.(conf_intervals); color = :black, linestyle = :dot)
-lines!(ax, break_pts, last.(conf_intervals); color = :black, linestyle = :dot)
-```
-![demo1](https://github.com/myersm0/WordFrequencyDistributions.jl/blob/main/examples/demo1.png)
-
-In this example we're only interested in one word, "the". But the main advantage of this package comes when you have a larger set of words that are of interest, or if you want do something with occurrence counts from the whole vocabulary. 
-
-For example, the function call `V(1, c)` supplied by this package is more than 10x faster than doing the equivalent operation on a `Vector{String} text`:
-```
-V(1, c)                           #  750 ns (on first execution; faster after that)
-sum(values(countmap(text)) .== 1) # 8174 ns
-```
-
-Not only that, but calling `V(1, c)` (or similar) caches the results for the whole frequency spectrum so that later calls reduce to ~30 ns:
+Some more operations:
 ```
 V(2, c)     # 27 ns; the number of words occurring 2 times
 V(999, c)   # 33 ns; the number of words occurring 999 times
 spectrum(c) # accessor for the whole frequency spectrum V(m, c)
+g(10, c)    # the number of words occurring at least 10 times
 ```
 
 ## Performance notes and comparison to ZipfR

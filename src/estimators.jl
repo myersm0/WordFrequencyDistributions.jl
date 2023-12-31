@@ -81,14 +81,14 @@ struct PoissonExpectation <: ExpectationEstimator end
 struct SampleExpectation <: ExpectationEstimator end
 struct GoodTuring <: ExpectationEstimator end
 
-"Expected number of terms with frequency `m` in a corpus of N′ tokens"
-function V(::ExpectationEstimator, c::Corpus; n::Integer) end
+"Expected number of terms in a corpus of `N(c)` tokens at text-time `t`"
+function V(::ExpectationEstimator, c::Corpus; t::Integer) end
 
-"Expected vocabulary size in a corpus of N′ tokens"
-function V(::ExpectationEstimator, m::Integer, c::Corpus; n::Integer) end
+"Expected number of terms with frequency `m` in a corpus of `N(c)` tokens at text-time `t`"
+function V(::ExpectationEstimator, m::Integer, c::Corpus; t::Integer) end
 
 "(2.41)"
-function V(::BinomialExpectation, m::Integer, c::Corpus; n::Integer)
+function V(::BinomialExpectation, m::Integer, c::Corpus; t::Integer)
 	ratio = n / N(c)
 	return sum(
 		V(k, c) * binomial(BigInt(k), m) * ratio^m * (1 - ratio)^(k - m) 
@@ -97,18 +97,18 @@ function V(::BinomialExpectation, m::Integer, c::Corpus; n::Integer)
 end
 
 "(2.42)"
-function V(::BinomialExpectation, c::Corpus; n::Integer)
+function V(::BinomialExpectation, c::Corpus; t::Integer)
 	ratio = n / N(c)
 	return V(c) - sum(V(m, c) * (1 - ratio)^m for m in m⃗(c))
 end
 
 "(2.53)"
-function V(::PoissonExpectation, c::Corpus; n::Integer)
+function V(::PoissonExpectation, c::Corpus; t::Integer)
 	c′ = c[1:n]
 	return sum(1 - exp(-N(c) * p(i, c′)) for i in 1:V(c′))
 end
 
-"Approximation of expected vocabulary size, valid only if sample is not LNRE (2.25)"
+"Approximation of expected vocabulary size; valid only if sample is not LNRE (2.25)"
 function V(::SampleExpectation, c::Corpus)
 	return sum(1 - exp(-f(i, c)) for i in 1:V(c))
 end
