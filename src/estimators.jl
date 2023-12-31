@@ -71,8 +71,19 @@ function C(::Herdan, c::Corpus; a::Real)
 	return a * N^(log(V(c)) / log(N(c)))
 end
 
-# TODO
-function C(::ZipfSize, c::Corpus) end
+"Baayen's Zipf size characteristic (p. 80)"
+function C(::ZipfSize, c::Corpus; nsteps::Int = 20)
+	break_pts = intervals(c; nsteps = nsteps)
+	l = [
+		loss(
+			MSEr(), c[1:t];
+			y = (m, c) -> V(m, c),
+			yhat = (m, _) -> V(BinomialExpectation(), c; t = t) / (m * (m + 1))
+		) for t in break_pts
+	]
+	return break_pts[argmin(l)]
+end
+
 
 # ===== interpolation, extrapolation for population estimates =====
 abstract type ExpectationEstimator <: Estimator end
@@ -104,7 +115,7 @@ end
 
 "(2.53)"
 function V(::PoissonExpectation, c::Corpus; t::Integer)
-	t < N(c) || error ("Interpolation via PoissonExpectation requires t < N(c)")
+	t < N(c) || error("Interpolation via PoissonExpectation requires t < N(c)")
 	c′ = c[1:t]
 	return sum(1 - exp(-N(c) * p(i, c′)) for i in 1:V(c′))
 end
