@@ -90,7 +90,6 @@ function V(::ExpectationEstimator, m::Integer, c::Corpus; n::Integer) end
 "(2.41)"
 function V(::BinomialExpectation, m::Integer, c::Corpus; n::Integer)
 	ratio = n / N(c)
-	ratio < 1 || error(DomainError)
 	return sum(
 		V(k, c) * binomial(BigInt(k), m) * ratio^m * (1 - ratio)^(k - m) 
 		for k in filter(k -> k >= m, m⃗(c))
@@ -100,7 +99,6 @@ end
 "(2.42)"
 function V(::BinomialExpectation, c::Corpus; n::Integer)
 	ratio = n / N(c)
-	ratio < 1 || error(DomainError)
 	return V(c) - sum(V(m, c) * (1 - ratio)^m for m in m⃗(c))
 end
 
