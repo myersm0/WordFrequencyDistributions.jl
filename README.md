@@ -5,7 +5,9 @@ Operations center around the `Corpus` struct, which was designed to provide exce
 
 A `Corpus` may be a single text (the text of a novel, for example) or a collection of documents. However, in either case, the words are simply stored as a single homogenous entity, and the document divisions (if any) are not recoverable or of interest.
 
-Function and field names were chosen as a compromise between fidelity to Baayen's notation in the book, and the goal of having a nice, consistent interface to all the functions. The main exception is where the book names something like `V(N)` (the size of the vocabulary in a corpus of N words); in this package, I implement that as `V(c::Corpus)`, where the corpus `c` encapsulates `N`, among other things.
+Function and field names were chosen as a compromise between fidelity to Baayen's notation in the book, and the goal of having a nice, consistent interface to all the functions. The main exception is where the book names something like `V(N)` (where N is the size of the vocabulary in a corpus of N words); in this package, I implement that as `V(c::Corpus)`, where the corpus `c` encapsulates `N`, among other things. Also, I apologize for having violated style conventions by using capitals for some function names (V, N, etc), but otherwise I would have had to impose a very different naming scheme of my own invention, and that seemed contrary to my goals here. So, functions in this package are designed to resemble formulae from the book as much as possible.
+
+An example application is given in `examples/lexical_specialization.jl`, where I show how this package could be used to evaluate topical coherence among document clusters from an unsupervised topic modeling scheme.
 
 ## Usage
 If you have a vector of strings called `text` (e.g. tokenized from a document), constructing a `Corpus` struct is simple:
@@ -73,10 +75,11 @@ V(1, c)                           #  750 ns (on first execution; faster after th
 sum(values(countmap(text)) .== 1) # 8174 ns
 ```
 
-Not only that, but calling `V(1, c)` (or similar) caches the results for the whole frequency spectrum so that later calls reduce to 32 ns:
+Not only that, but calling `V(1, c)` (or similar) caches the results for the whole frequency spectrum so that later calls reduce to ~32 ns:
 ```
-V(2, c)   # 27 ns; the number of words occurring 2 times
-V(999, c) # 33 ns; the number of words occurring 999 times
+V(2, c)     # 27 ns; the number of words occurring 2 times
+V(999, c)   # 33 ns; the number of words occurring 999 times
+spectrum(c) # accessor for the whole frequency spectrum V(m, c)
 ```
 
 ## Performance notes and comparison to ZipfR
