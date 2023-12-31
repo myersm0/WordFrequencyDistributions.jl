@@ -7,9 +7,9 @@ A `Corpus` may be a single text (the text of a novel, for example) or a collecti
 
 Function and field names were chosen as a compromise between fidelity to Baayen's notation in the book, and the goal of having a nice, consistent interface to all the functions. The main exception is where the book names something like `V(N)` (where N is the size of the vocabulary in a corpus of N words); in this package, I implement that as `V(c::Corpus)`, where the corpus `c` encapsulates `N`, among other things. Also, I apologize for having violated style conventions by using capitals for some function names (V, N, etc), but otherwise I would have had to impose a very different naming scheme of my own invention, and that seemed contrary to my goals here. So, functions in this package are designed to resemble formulae from the book as much as possible.
 
-Another deviation from Baayen's notation is in cases where he names things such as the "characteristic constants" Yule's _K_, Simpson's _D_, Zipf size _Z_, etc. I've instead named these functions all `C` for characteristic constant, and provided dispatch on method name to distinguish them, such as `C(::Yule, args...)` and `C(::Simpson, args...)`, etc, to emphasize their similar nature and to reduce the alphabet-soup aspect of the interface somewhat.
+Another deviation from Baayen's notation is in cases where he names things such as the "characteristic constants" Yule's _K_, Simpson's _D_, Zipf size _Z_, etc. I've instead named these functions all `C` for characteristic constant and provided trait-based dispatch to distinguish them, such as `C(::Yule, args...)` and `C(::Simpson, args...)`, etc, to emphasize their similar nature and to reduce the alphabet-soup aspect of the interface somewhat.
 
-An example application is given in `examples/lexical_specialization.jl`, where I show how this package could be used to evaluate topical coherence among document clusters from an unsupervised topic modeling scheme.
+An example application is given in `examples/lexical_specialization.jl`, where I show how these concepts could be used to evaluate document clusters from an unsupervised topic modeling scheme.
 
 ## Usage
 If you have a vector of strings called `text` (e.g. tokenized from a document), constructing a `Corpus` struct is simple:
@@ -71,13 +71,14 @@ lines!(ax, break_pts, last.(conf_intervals); color = :black, linestyle = :dot)
 ![demo1](https://github.com/myersm0/WordFrequencyDistributions.jl/blob/main/examples/demo1.png)
 
 In this example we're only interested in one word, "the". But the main advantage of this package comes when you have a larger set of words that are of interest, or if you want do something with occurrence counts from the whole vocabulary. 
+
 For example, the function call `V(1, c)` supplied by this package is more than 10x faster than doing the equivalent operation on a `Vector{String} text`:
 ```
 V(1, c)                           #  750 ns (on first execution; faster after that)
 sum(values(countmap(text)) .== 1) # 8174 ns
 ```
 
-Not only that, but calling `V(1, c)` (or similar) caches the results for the whole frequency spectrum so that later calls reduce to ~32 ns:
+Not only that, but calling `V(1, c)` (or similar) caches the results for the whole frequency spectrum so that later calls reduce to ~30 ns:
 ```
 V(2, c)     # 27 ns; the number of words occurring 2 times
 V(999, c)   # 33 ns; the number of words occurring 999 times
