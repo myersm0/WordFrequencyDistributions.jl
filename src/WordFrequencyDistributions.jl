@@ -25,5 +25,9 @@ export CharacteristicEstimator, Yule, Simpson, Guiraud, Sichel, Honore, Herdan, 
 export ExpectationEstimator, BinomialExpectation, PoissonExpectation, SampleExpectation, GoodTuring
 export CL, P
 
+include("loss.jl")
+export LossFunction, MSE, MSEr
+export loss
+
 end
 
