@@ -2,12 +2,12 @@
 @kwdef struct Corpus{T <: Integer}
 	source::Vector{T}
 	ω::Vector{String}
-	occurrences::SparseArrays.SparseMatrixCSC{Bool, T}
 	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	V::T = length(ω)
 	N::T = length(source)
+	occurrences::SparseArrays.SparseMatrixCSC{Bool, T}
 	f::Ref{Union{Nothing, Vector{T}}} = nothing        # occurence counts for each type
-	spectrum::Ref{Union{Nothing, Vector{T}}} = nothing # a tabulation of occurrence counts
+	spectrum::Ref{Union{Nothing, Vector{T}}} = nothing # tabulation of occurrence counts
 	m⃗::Ref{Union{Nothing, Vector{T}}} = nothing        # the indices of non-zero spectra
 end
 
@@ -104,12 +104,14 @@ occurrences(w::String, c::Corpus) = c[w]
 """
     intervals(c; nsteps = 20)
 
-Get `nsteps` equispaced points from 1 to N(c)`.
+Get `k` equispaced points from 1 to N(c)`.
 """
-function intervals(c::Corpus{T}; nsteps = 20) where T
-	step_size = T(round(N(c) / nsteps))
-	rng = range(step_size, step_size * nsteps, nsteps) |> collect .|> Int
-	rng[end] = N(c)
+function intervals(c::Corpus{T}; k::Int = 20) where T
+	step_size = N(c) ÷ k
+	step_size > 0 || error(DomainError)
+	rem = N(c) % k
+	rng = range(step_size, step_size * k, k) |> collect .|> T
+	rng[k:-1:(k - rem + 1)] .+= rem:-1:1
 	return rng
 end
 
