@@ -58,7 +58,17 @@ subsets = [
 
 	@test g(1, c) == length(alphabet)
 	@test all(g(m, c) == length(vowels) for m in 2:M(c))
+
+	partitions = partition(c; k = 21)
+	for c′ in partitions
+		@test V(c′) == N(c′) == 6
+	end
+
+	partitions = partition(c)
+	@test sum(N.(partitions)) == N(c)
+	@test maximum(diff(N.(partitions))) <= 1
 end
+
 
 
 
