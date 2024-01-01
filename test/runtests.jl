@@ -39,6 +39,7 @@ subsets = [
 
 	for inds in subsets
 		c′ = c[inds]
+		@test c′ == Corpus(text[inds])
 		@test N(c′) == length(inds)
 		@test sum(m * V(m, c′) for m in m⃗(c′)) == N(c′)
 	end
