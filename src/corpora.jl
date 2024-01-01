@@ -122,6 +122,14 @@ function Base.show(io::IO, mime::MIME"text/plain", c::Corpus)
 	print(io, "Corpus with $(N(c)) tokens, $(V(c)) types")
 end
 
+function recover(c::Corpus)
+	return [c.ω[i] for i in c.source]
+end
+
+function Base.:(==)(c1::Corpus, c2::Corpus)
+	return recover(c1) == recover(c2)
+end
+
 
 # ===== lazy field initializers ================================================
 
