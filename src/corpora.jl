@@ -44,10 +44,11 @@ function Base.getindex(
 		c::Corpus{T}, rng::Union{AbstractVector{<: Integer}, AbstractRange{<: Integer}}
 	) where T <: Integer
 	source = c.source[rng]
-	w_indices = unique(source)
+	w_indices = sort(unique(source))
+	ranks = denserank(source)
 	ω = c.ω[w_indices]
 	occurrences = c.occurrences[w_indices, rng]
-	return Corpus{T}(source = source, ω = ω, occurrences = occurrences)
+	return Corpus{T}(source = ranks, ω = ω, occurrences = occurrences)
 end
 
 """
