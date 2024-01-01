@@ -47,12 +47,12 @@ permuted_corpus = permute(c)
 
 You can break your corpus up into a vector of 40 smaller ones via:
 ```
-chunks = partition(c; nchunks = 40)
+chunks = partition(c; k = 40)
 ```
 
 A related operation is getting a certain number of equispaced points in the corpus, e.g. 20:
 ```
-break_pts = intervals(c; nsteps = 20)
+break_pts = intervals(c; k = 20)
 ```
 
 For sample and population statistics relating to your corpus, the general pattern of functions offered is as follows: `𝑓([::Estimator,] args...; kwargs...)`. If you omit the first argument, an `Estimator`, then the operation is performed empirically on the observed sample. Otherwise, you may supply an `Estimator` for which an estimation method is defined. Here are a few different ways to compute the number of distinct tokens (types) that occur exactly once in a corpus `c`.
