@@ -87,24 +87,15 @@ function permute(c::Corpus)
 	return sample(c, N(c); replace = false)
 end
 
-"""
-	 partition(c; nchunks, chunk_size)
-
-Partition `c::Corpus` into a `Vector{Corpus}` of length `nchunks` (by default, 40).
-"""
-function partition(c::Corpus; nchunks::Int = 40, chunk_size::Int = N(c) ÷ nchunks)
-	return [c[((i - 1) * chunk_size + 1):min(N(c), i * chunk_size)] for i in 1:nchunks]
-end
-
 Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
 
 occurrences(c::Corpus) = c.occurrences
 occurrences(w::String, c::Corpus) = c[w]
 
 """
-    intervals(c; nsteps = 20)
+    intervals(c; k)
 
-Get `k` equispaced points from 1 to N(c)`.
+Get `k` (default: 20) equispaced points from 1 to N(c)`.
 """
 function intervals(c::Corpus{T}; k::Int = 20) where T
 	step_size = N(c) ÷ k
@@ -113,6 +104,18 @@ function intervals(c::Corpus{T}; k::Int = 20) where T
 	rng = range(step_size, step_size * k, k) |> collect .|> T
 	rng[k:-1:(k - rem + 1)] .+= rem:-1:1
 	return rng
+end
+
+"""
+	 partition(c; k, endpoints)
+
+Partition `c::Corpus` into a `Vector{Corpus}` of length `k` (by default, 40). Or supply 
+a vector of predefined `endpoints` for the partitions, in which case `k` is ignored.
+"""
+function partition(
+		c::Corpus; k::Int = 40, endpoints::Vector{<: Integer} = intervals(c; k = k)
+	)
+	return [c[1 + (i == 1 ? 0 : endpoints[i - 1]):endpoints[i]] for i in eachindex(endpoints)]
 end
 
 function Base.show(io::IO, mime::MIME"text/plain", c::Corpus)
