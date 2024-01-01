@@ -4,3 +4,10 @@ git-tree-sha1 = "4d608e37ec20dde688614acbb0721c01b76a2f15"
     [[medadata.download]]
     sha256 = "59b7fe16a5e693b3b72de0295541e73eb47eeafb55d749402d9f9ca7b54e7245"
     url = "https://gist.github.com/myersm0/b126bf15055713d3f6aab9c6605aa23a/raw/4d608e37ec20dde688614acbb0721c01b76a2f15.tar.gz"
+
+[pg_texts]
+git-tree-sha1 = "b47fafe0743a1d11d8ced87e6f6edabc8a525770"
+
+    [[pg_texts.download]]
+    sha256 = "7c714b2f35115d997bd165c7a11a20e32f9e25eefea98d64ed2c99b099e62468"
+    url = "https://gist.github.com/myersm0/438007cc4bbda906b3dfe342e8ddbaa4/raw/b47fafe0743a1d11d8ced87e6f6edabc8a525770.tar.gz"
