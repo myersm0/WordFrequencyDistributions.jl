@@ -1,7 +1,7 @@
 name = "WordFrequencyDistributions"
 uuid = "e54f717d-7b48-4a5e-b2d3-ea27d5093ee4"
 authors = ["Michael Myers"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
