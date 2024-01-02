@@ -113,7 +113,7 @@ Partition `c::Corpus` into a `Vector{Corpus}` of length `k` (by default, 40). Or
 a vector of predefined `endpoints` for the partitions, in which case `k` is ignored.
 """
 function partition(
-		c::Corpus; k::Int = 40, endpoints::Vector{<: Integer} = intervals(c; k = k)
+		c::Corpus; k::Int = 20, endpoints::Vector{<: Integer} = intervals(c; k = k)
 	)
 	return [c[1 + (i == 1 ? 0 : endpoints[i - 1]):endpoints[i]] for i in eachindex(endpoints)]
 end

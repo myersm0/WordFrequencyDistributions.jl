@@ -45,9 +45,9 @@ sampled_corpus = sample(c, N(c); replace = false)
 permuted_corpus = permute(c)
 ```
 
-You can break your corpus up into a vector of 40 smaller ones via:
+You can break your corpus up into a vector of 20 smaller ones via:
 ```
-chunks = partition(c; k = 40)
+chunks = partition(c; k = 20)
 ```
 
 A related operation is getting a certain number of equispaced points in the corpus, e.g. 20:
