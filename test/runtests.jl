@@ -93,7 +93,24 @@ text = @chain lines begin
 	filter(x -> occursin(r"[a-z0-9]", x), _)
 end
 
-endpoints = intervals(c; nsteps = 20)
+c = Corpus(text)
+
+endpoints = intervals(c)
+simpson = [C(Simpson(), c[1:n]) for n in endpoints]
+yule = [C(Yule(), c[1:n]) for n in endpoints]
+@test cor(simpson, yule) > 0.9999
+@test yule[1] ≈ 102.4640045135
+@test yule[end] ≈ 102.2274628004
+
+using GLMakie
+
+fig = Figure()
+ax = Axis(fig[1, 1])
+lines!(ax, endpoints, simpson)
+
+
+
+endpoints = intervals(c)
 l = [
 	loss(
 		MSEr(), c[1:t];
@@ -102,6 +119,10 @@ l = [
 	) for t in endpoints
 ]
 
+fig = Figure()
+ax = Axis(fig[1, 1])
+scatter!(ax, endpoints, 100 * l; color = :black)
+lines!(ax, endpoints, 100 * l; color = :black)
 
 
 
