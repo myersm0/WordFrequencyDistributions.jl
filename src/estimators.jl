@@ -34,6 +34,7 @@ abstract type CharacteristicEstimator <: Estimator end
 struct Yule <: CharacteristicEstimator end
 struct Simpson <: CharacteristicEstimator end
 struct Guiraud <: CharacteristicEstimator end
+struct Brunet <: CharacteristicEstimator end
 struct Sichel <: CharacteristicEstimator end
 struct Honore <: CharacteristicEstimator end
 struct Herdan <: CharacteristicEstimator end
@@ -54,6 +55,11 @@ end
 "Guiraud (1.17)"
 function C(::Guiraud, c::Corpus)
 	return V(c) / sqrt(N(c))
+end
+
+"Brunet (1.18)"
+function C(::Brunet, c::Corpus; a::Real = 0.17)
+	return N(c)^(V(c)^-a)
 end
 
 "Sichel's proportion of dis legomena"

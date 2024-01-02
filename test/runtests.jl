@@ -96,11 +96,19 @@ end
 c = Corpus(text)
 
 endpoints = intervals(c)
-simpson = [C(Simpson(), c[1:n]) for n in endpoints]
+
 yule = [C(Yule(), c[1:n]) for n in endpoints]
+simpson = [C(Simpson(), c[1:n]) for n in endpoints]
 @test cor(simpson, yule) > 0.9999
 @test yule[1] ≈ 102.4640045135
 @test yule[end] ≈ 102.2274628004
+
+guiraud = [C(Guiraud(), c[1:n]) for n in endpoints]
+
+brunet = [C(Brunet(), c[1:n]) for n in endpoints]
+@test brunet[1] ≈ 12.85455913
+@test brunet[end] ≈ 14.37354565
+
 
 using GLMakie
 

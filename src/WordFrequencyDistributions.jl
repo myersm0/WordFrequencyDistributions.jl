@@ -22,7 +22,8 @@ export ω, V, N, f, p, g
 
 include("estimators.jl")
 export ZipfianEstimator, Zipf, GaleSampson, NaranBalasub
-export CharacteristicEstimator, Yule, Simpson, Guiraud, Sichel, Honore, Herdan, ZipfSize
+export CharacteristicEstimator, Yule, Simpson, Guiraud, Brunet
+export Sichel, Honore, Herdan, ZipfSize
 export ExpectationEstimator, BinomialExpectation, PoissonExpectation, SampleExpectation, GoodTuring
 export C, CL, P
 
