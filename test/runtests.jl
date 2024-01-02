@@ -1,5 +1,8 @@
 using WordFrequencyDistributions
 using Test
+using Chain
+using StatsBase
+using Pkg.Artifacts
 
 # define a vocab of the lowercase ASCII a-z
 alphabet = Char.(97:122) .|> string
@@ -70,8 +73,7 @@ subsets = [
 end
 
 
-using Pkg.Artifacts
-using Chain
+## Set up "Alice in Wonderland" text to match results from Baayen 2001
 
 rootpath = artifact"pg_texts"
 filename = joinpath(rootpath, "pg11.txt") # Alice in Wonderland
@@ -94,48 +96,31 @@ text = @chain lines begin
 end
 
 c = Corpus(text)
-
 endpoints = intervals(c)
 
-yule = [C(Yule(), c[1:n]) for n in endpoints]
-simpson = [C(Simpson(), c[1:n]) for n in endpoints]
-@test cor(simpson, yule) > 0.9999
-@test yule[1] ≈ 102.4640045135
-@test yule[end] ≈ 102.2274628004
+# aim to do this better later; for now, since I can't exactly replicate the
+# tokenization from the book, these results match Baayen's closely enough
+@testset "CharacteristicConstants" begin
+	yule = [C(Yule(), c[1:n]) for n in endpoints]
+	simpson = [C(Simpson(), c[1:n]) for n in endpoints]
+	@test cor(simpson, yule) > 0.9999
+	@test yule[1] ≈ 102.4640045135
+	@test yule[end] ≈ 102.2274628004
 
-guiraud = [C(Guiraud(), c[1:n]) for n in endpoints]
+	guiraud = [C(Guiraud(), c[1:n]) for n in endpoints]
 
-brunet = [C(Brunet(), c[1:n]) for n in endpoints]
-@test brunet[1] ≈ 12.85455913
-@test brunet[end] ≈ 14.37354565
+	brunet = [C(Brunet(), c[1:n]) for n in endpoints]
+	@test brunet[1] ≈ 12.85455913
+	@test brunet[end] ≈ 14.37354565
 
+	sichel = [C(Sichel(), c[1:n]) for n in endpoints]
+	@test sichel[1] ≈ 0.1700680272
+	@test sichel[end] ≈ 0.1560150375
 
-using GLMakie
-
-fig = Figure()
-ax = Axis(fig[1, 1])
-lines!(ax, endpoints, simpson)
-
-
-
-endpoints = intervals(c)
-l = [
-	loss(
-		MSEr(), c[1:t];
-		y = (m, c) -> V(m, c),
-		yhat = (m, _) -> V(BinomialExpectation(), c; t = t) / (m * (m + 1))
-	) for t in endpoints
-]
-
-fig = Figure()
-ax = Axis(fig[1, 1])
-scatter!(ax, endpoints, 100 * l; color = :black)
-lines!(ax, endpoints, 100 * l; color = :black)
-
-
-
-
-
+	honore = [C(Honore(), c[1:n]) for n in endpoints]
+	@test honore[1] ≈ 1742.173449
+	@test honore[end] ≈ 1828.201155
+end
 
 
 
