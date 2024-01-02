@@ -43,12 +43,12 @@ function C(::CharacteristicEstimator, c::Corpus; kwargs...) end
 
 "Yule (1.15)"
 function C(::Yule, c::Corpus)
-	return 1e4 * sum(m^2 * V(m, c) - N(c) for m in m(c)) / N(c)^2
+	return 1e4 * sum(m^2 * V(m, c) - N(c) for m in m⃗(c)) / N(c)^2
 end
 
 "Simpson (1.16)"
 function C(::Simpson, c::Corpus)
-	return sum(V(m, c) * (m / N(c)) * ((m - 1) / (N(c) - 1)) for m in m(c))
+	return sum(V(m, c) * (m / N(c)) * ((m - 1) / (N(c) - 1)) for m in m⃗(c))
 end
 
 "Guiraud (1.17)"
@@ -73,15 +73,15 @@ end
 
 "Baayen's Zipf size characteristic (p. 80)"
 function C(::ZipfSize, c::Corpus; nsteps::Int = 20)
-	break_pts = intervals(c; nsteps = nsteps)
+	endpoints = intervals(c; nsteps = nsteps)
 	l = [
 		loss(
 			MSEr(), c[1:t];
 			y = (m, c) -> V(m, c),
 			yhat = (m, _) -> V(BinomialExpectation(), c; t = t) / (m * (m + 1))
-		) for t in break_pts
+		) for t in endpoints
 	]
-	return break_pts[argmin(l)]
+	return endpoints[argmin(l)]
 end
 
 
