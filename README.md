@@ -1,7 +1,7 @@
 # WordFrequencyDistributions
 A Julia implementation of some of the techniques for estimating and analyzing word frequency statistics, from R. Harald Baayen's book _Word Frequency Distributions_ (Springer, 2001).
 
-Operations center around the `Corpus` struct, which was designed to provide excellent performance over a range of operations that the book discusses. A `Corpus` is both very fast and memory-efficient; even after initializing auxiliary fields, its RAM usage tends to be about the same as that of the original text vector it was constructed from.
+Operations center around the `Corpus` struct, which was designed to provide excellent performance over a range of operations that the book discusses. A `Corpus` is both very fast and memory-efficient.
 
 A `Corpus` may be a single text (the text of a novel, for example) or a collection of documents. However, in either case, the words are simply stored as a single homogenous entity, and the document divisions (if any) are not recoverable or of interest. (There are ways that you can get at the document divisions if you need to -- see `partitions` and `intervals` in the usage section below.)
 
@@ -86,15 +86,6 @@ loss(MSE(), c; y = observed, yhat = expected, spectra = 1:15)
 # as above, but use the relative MSE variant, "MSEr" (equation 3.2 from Baayen):
 loss(MSEr(), c; y = observed, yhat = expected, spectra = 1:15)
 ```
-
-## Performance notes and comparison to ZipfR
-There's already an excellent package in the R language for the things implemented here (and more), [zipfR](http://zipfr.r-forge.r-project.org). With the current package, I wanted to see if I could improve on the performance in terms of both speed and capacity for handling large corpora.
-
-I found two things. One, the performance of zipfR is already excellent. Two, it's hard to compare the two packages directly, because they operate very differently and because use cases can differ so much. For example:
-- for initialization of a corpus of 27k tokens, I get a 1.97 ms initialization time in this package, compared to 6.16 ms with zipfR. For larger corpora however, zipfR comes out ahead
-- this package comes out ahead in subsetting and sampling operations (e.g. for subsetting and computing occurrence statistics for the first 1000 tokens of `c`, I get 31 μs in this package versus 588 μs in zipfR; performance gains in this respect are similar for random sampling and for larger sizes)
-
-The reasons for the performance difference behind both of these examples is the same: this package does more work upfront in constructing the corpus, in order to facilite fast subsetting and sampling later on.
 
 [![Build Status](https://github.com/myersm0/WordFrequencyDistributions.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/WordFrequencyDistributions.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
