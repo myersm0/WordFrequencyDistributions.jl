@@ -5,7 +5,6 @@
 	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	V::T = length(ω)
 	N::T = length(source)
-	occurrences::SparseArrays.SparseMatrixCSC{Bool, T}
 	f::Ref{Union{Nothing, Vector{T}}} = nothing        # occurence counts for each type
 	spectrum::Ref{Union{Nothing, Vector{T}}} = nothing # tabulation of occurrence counts
 	m⃗::Ref{Union{Nothing, Vector{T}}} = nothing        # the indices of non-zero spectra
@@ -24,8 +23,7 @@ function Corpus{T}(text::Vector{String}) where T <: Integer
 	V = length(ω)
 	ωmap = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	word_indices = [ωmap[w] for w in text]
-	occurrences = SparseArrays.sparse(word_indices, 1:N, trues(N))
-	return Corpus{T}(source = word_indices, ω = ω, occurrences = occurrences)
+	return Corpus{T}(source = word_indices, ω = ω)
 end
 
 """
@@ -47,26 +45,16 @@ function Base.getindex(
 	w_indices = sort(unique(source))
 	ranks = denserank(source)
 	ω = c.ω[w_indices]
-	occurrences = c.occurrences[w_indices, rng]
-	return Corpus{T}(source = ranks, ω = ω, occurrences = occurrences)
+	return Corpus{T}(source = ranks, ω = ω)
 end
 
 """
     getindex(c, w)
 
-Get the sparse occurrence vector of the word `w` in `Corpus c`.
+Get a binary occurrence vector of the word `w` in `Corpus c`.
 """
 function Base.getindex(c::Corpus, w::String)
-	return c.occurrences[c.ωmap[w], :]
-end
-
-"""
-    getindex(c, w)
-
-Get a sparse occurrence matrix of a set of words from `Corpus c`.
-"""
-function Base.getindex(c::Corpus, w⃗::Vector{String})
-	return c.occurrences[[c.ωmap[w] for w in w⃗], :]
+	return c.source .== c.ωmap[w]
 end
 
 """
@@ -88,9 +76,6 @@ function permute(c::Corpus)
 end
 
 Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
-
-occurrences(c::Corpus) = c.occurrences
-occurrences(w::String, c::Corpus) = c[w]
 
 """
     intervals(c; k)
@@ -134,7 +119,7 @@ end
 # ===== lazy field initializers ================================================
 
 function f(c::Corpus)
-	isnothing(c.f[]) && (c.f[] = sum(c.occurrences; dims = 2)[:])
+	isnothing(c.f[]) && (c.f[] = counts(c.source))
 	return c.f[]
 end
 

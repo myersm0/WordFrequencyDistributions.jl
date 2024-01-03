@@ -3,7 +3,6 @@ module WordFrequencyDistributions
 
 using StatsBase
 using Chain
-import SparseArrays
 
 abstract type CheckStyle end
 struct Safe <: CheckStyle end
