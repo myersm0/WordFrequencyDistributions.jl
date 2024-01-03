@@ -3,8 +3,8 @@
 	source::Vector{T}
 	ω::Vector{String}
 	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
-	V::Int = length(ω)
 	N::Int = length(source)
+	V::Ref{Union{Nothing, Int}} = nothing
 	f::Ref{Union{Nothing, Vector{Int}}} = nothing        # occurence counts for each type
 	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing # tabulation of occurrence counts
 	m⃗::Ref{Union{Nothing, Vector{Int}}} = nothing        # the indices of non-zero spectra
@@ -41,11 +41,7 @@ Turn `Corpus c` into a smaller corpus using only its tokens in `rng`.
 function Base.getindex(
 		c::Corpus{T}, rng::Union{AbstractVector{<: Integer}, AbstractRange{<: Integer}}
 	) where T <: Integer
-	source = c.source[rng]
-	w_indices = sort(unique(source))
-	ranks = denserank(source)
-	ω = c.ω[w_indices]
-	return Corpus{T}(source = ranks, ω = ω)
+	return Corpus{T}(source = c.source[rng], ω = c.ω, ωmap = c.ωmap)
 end
 
 """
@@ -75,7 +71,7 @@ function permute(c::Corpus)
 	return sample(c, N(c); replace = false)
 end
 
-Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w)
+Base.occursin(w::String, c::Corpus) = f(c)[c.ωmap[w]] != 0
 
 """
     intervals(c; k)
@@ -118,13 +114,18 @@ end
 
 # ===== lazy field initializers ================================================
 
+function V(c::Corpus)
+	isnothing(c.V[]) && (c.V[] = sum(f(c) .> 0))
+	return c.V[]
+end
+
 function f(c::Corpus)
 	isnothing(c.f[]) && (c.f[] = counts(c.source))
 	return c.f[]
 end
 
 function spectrum(c::Corpus)
-	isnothing(c.spectrum[]) && (c.spectrum[] = counts(f(c)))
+	isnothing(c.spectrum[]) && (c.spectrum[] = counts(f(c)[f(c) .> 0]))
 	return c.spectrum[]
 end
 

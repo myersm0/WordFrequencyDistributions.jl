@@ -2,9 +2,6 @@
 "Get the vocabulary elements of the corpus."
 ω(c::Corpus) = c.ω
 
-"Get the size of the vocabulary in the corpus."
-V(c::Corpus) = c.V
-
 "Get the number of words in the corpus."
 N(c::Corpus) = c.N
 
