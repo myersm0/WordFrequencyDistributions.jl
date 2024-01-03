@@ -3,11 +3,11 @@
 	source::Vector{T}
 	ω::Vector{String}
 	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
-	V::T = length(ω)
-	N::T = length(source)
-	f::Ref{Union{Nothing, Vector{T}}} = nothing        # occurence counts for each type
-	spectrum::Ref{Union{Nothing, Vector{T}}} = nothing # tabulation of occurrence counts
-	m⃗::Ref{Union{Nothing, Vector{T}}} = nothing        # the indices of non-zero spectra
+	V::Int = length(ω)
+	N::Int = length(source)
+	f::Ref{Union{Nothing, Vector{Int}}} = nothing        # occurence counts for each type
+	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing # tabulation of occurrence counts
+	m⃗::Ref{Union{Nothing, Vector{Int}}} = nothing        # the indices of non-zero spectra
 end
 
 """
@@ -18,8 +18,8 @@ not exceed `typemax(T)`.
 """
 function Corpus{T}(text::Vector{String}) where T <: Integer
 	N = length(text)
-	N <= typemax(T) || error("Token count exceeds typemax for Corpus{$(T)}")
 	ω = unique(text)
+	length(ω) <= typemax(T) || error("Number of unique words exceeds typemax for Corpus{$(T)}")
 	V = length(ω)
 	ωmap = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	word_indices = [ωmap[w] for w in text]
@@ -29,9 +29,9 @@ end
 """
     Corpus(text)
 
-Initialize a `Corpus{Int32}` from a vector of strings `text`.
+Initialize a `Corpus{UInt16}` from a vector of strings `text`.
 """
-Corpus(text::Vector{String}) = Corpus{Int32}(text)
+Corpus(text::Vector{String}) = Corpus{UInt16}(text)
 
 """
     getindex(c, rng)
