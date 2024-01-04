@@ -20,7 +20,12 @@ c = Corpus(text)
 subsets = [
 	1:6, 
 	collect(7:(6 * 4)), 
-	union(1:length(vowels), reverse(Int.(range(101, 126; step = 5))))
+	union(1:length(vowels), reverse(Int.(range(101, 126; step = 5)))),
+	findall(letter in vowels for letter in text),
+	findall(letter in consonants for letter in text),
+	1:9:126,
+	1:18:126,
+	2:2:126,
 ]
 
 @testset "Corpus" begin
@@ -44,6 +49,7 @@ subsets = [
 		c′ = c[inds]
 		@test c′ == Corpus(text[inds])
 		@test N(c′) == length(inds)
+		@test ω(c′) == unique(text[inds])
 		@test sum(m * V(m, c′) for m in m⃗(c′)) == N(c′)
 	end
 
