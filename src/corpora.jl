@@ -23,7 +23,7 @@ function Corpus{T}(text::Vector{String}) where T <: Integer
 	V = length(ω)
 	ωmap = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	word_indices = [ωmap[w] for w in text]
-	return Corpus{T}(source = word_indices, ω = ω)
+	return Corpus{T}(source = word_indices, ω = ω, ωmap = ωmap)
 end
 
 """
