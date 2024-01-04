@@ -78,7 +78,6 @@ Check if word `w::String` occurs in `c::Corpus`.
 """
 function Base.occursin(w::String, c::Corpus)
 	return haskey(c.ωmap, w) && occursin(c.ωmap[w], c)
-	return false
 end
 
 function Base.occursin(i::Integer, c::Corpus)
