@@ -1,7 +1,7 @@
 name = "WordFrequencyDistributions"
 uuid = "e54f717d-7b48-4a5e-b2d3-ea27d5093ee4"
 authors = ["Michael Myers"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
