@@ -125,7 +125,7 @@ function f(c::Corpus)
 end
 
 function spectrum(c::Corpus)
-	isnothing(c.spectrum[]) && (c.spectrum[] = counts(f(c)[f(c) .> 0]))
+	isnothing(c.spectrum[]) && (c.spectrum[] = counts(f(c), length(c.ω)))
 	return c.spectrum[]
 end
 
