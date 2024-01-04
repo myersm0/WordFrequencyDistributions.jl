@@ -1,6 +1,6 @@
 
 "Get the vocabulary elements of the corpus."
-ω(c::Corpus) = c.ω
+ω(c::Corpus) = c.ω[f(c .> 0)]
 
 "Get the number of words in the corpus."
 N(c::Corpus) = c.N

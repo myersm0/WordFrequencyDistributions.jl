@@ -71,7 +71,7 @@ function permute(c::Corpus)
 	return sample(c, N(c); replace = false)
 end
 
-Base.occursin(w::String, c::Corpus) = f(c)[c.ωmap[w]] != 0
+Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w) && f(c)[c.ωmap[w]] != 0
 
 """
     intervals(c; k)
@@ -120,7 +120,7 @@ function V(c::Corpus)
 end
 
 function f(c::Corpus)
-	isnothing(c.f[]) && (c.f[] = counts(c.source))
+	isnothing(c.f[]) && (c.f[] = counts(c.source, length(c.ω)))
 	return c.f[]
 end
 
