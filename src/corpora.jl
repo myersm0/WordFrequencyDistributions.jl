@@ -71,7 +71,19 @@ function permute(c::Corpus)
 	return sample(c, N(c); replace = false)
 end
 
-Base.occursin(w::String, c::Corpus) = haskey(c.ωmap, w) && f(c)[c.ωmap[w]] != 0
+"""
+    occursin(w, c)
+
+Check if word `w::String` occurs in `c::Corpus`.
+"""
+function Base.occursin(w::String, c::Corpus)
+	return haskey(c.ωmap, w) && occursin(c.ωmap[w], c)
+	return false
+end
+
+function Base.occursin(i::Integer, c::Corpus)
+	return isnothing(c.f[]) ? i in c.source : (i <= length(f(c)) && f(c)[i] != 0)
+end
 
 """
     intervals(c; k)
