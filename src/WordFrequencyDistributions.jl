@@ -2,7 +2,6 @@
 module WordFrequencyDistributions
 
 using StatsBase
-using Chain
 
 abstract type CheckStyle end
 struct Safe <: CheckStyle end
