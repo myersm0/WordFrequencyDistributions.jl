@@ -25,8 +25,11 @@ export Sichel, Honore, Herdan, ZipfSize
 export ExpectationEstimator, BinomialExpectation, PoissonExpectation, SampleExpectation, GoodTuring
 export C, CL, P
 
+include("dispersion.jl")
+export dispersion
+
 include("loss.jl")
-export LossFunction, MSE, MSEr
+export LossFunction, MSE, MSEr, C1, C2, C3
 export loss
 
 end
