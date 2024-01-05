@@ -1,6 +1,7 @@
 
 module WordFrequencyDistributions
 
+using Chain
 using StatsBase
 
 abstract type CheckStyle end
