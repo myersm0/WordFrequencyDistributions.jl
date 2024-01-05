@@ -45,7 +45,7 @@ function loss(::C3, c::Corpus; r::Int)
 	return (1 / (r + 2)) * (
 		(V(c) - E(BinomialExpectation(), c))^2 +
 		sum((V(m, c) - V(BinomialExpectation(), m, c))^2 for m in intersect(1:r, m⃗(c))) +
-		sum(V(m, c) - V(BinomialExpectation(), m, c) for m in setdiff(m⃗(c), 1:r))^2
+		sum(V(m, c) - V(BinomialExpectation(), m, c) for m in setdiff(m⃗(c), 1:r))^2 +
 		(N(c) - sum(m * V(BinomialExpectation(), m, c) for m in m⃗(c)))^2
 	)
 end
