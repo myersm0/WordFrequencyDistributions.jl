@@ -78,8 +78,8 @@ function C(::Herdan, c::Corpus; a::Real)
 end
 
 "Baayen's Zipf size characteristic (p. 80)"
-function C(::ZipfSize, c::Corpus; nsteps::Int = 20)
-	endpoints = intervals(c; nsteps = nsteps)
+function C(::ZipfSize, c::Corpus; k::Int = 20)::Int
+	endpoints = intervals(c; k = k)
 	l = [
 		loss(
 			MSEr(), c[1:t];
