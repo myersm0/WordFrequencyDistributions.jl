@@ -5,7 +5,7 @@ Operations center around the `Corpus` struct, which was designed to provide exce
 
 A `Corpus` may be a single text (the text of a novel, for example) or a collection of documents. However, in either case, the words are simply stored as a single homogenous entity, and the document divisions (if any) are not recoverable or of interest. (There are ways that you can get at the document divisions if you need to -- see `partitions` and `intervals` in the usage section below.)
 
-An example application is given in `examples/lexical_specialization.jl`, where I show how these concepts could be used to evaluate document clusters from an unsupervised topic modeling scheme.
+Two demos are provided in the `examples` folder in this repo.
 
 ## Notation
 Function and field names were chosen as a compromise between fidelity to Baayen's notation in the book, and the goal of having a nice, consistent interface to all the functions. I apologize for having violated style conventions by using capitals for some function names (V, N, etc), but otherwise I would have had to impose a very different naming scheme of my own, and that seemed contrary to my goals here. So, functions in this package are designed to resemble equations from the book as much as possible.
