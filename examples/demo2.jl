@@ -12,7 +12,6 @@ using Pkg.Artifacts
 # some modification to handle this particular dataset
 
 rootpath = artifact"medadata"
-
 filelist = [joinpath(rootpath, "$i.readme.md") for i in 1:70]
 classes = vcat([repeat([i], 10) for i in 1:7]...)
 
@@ -33,7 +32,7 @@ docs = process_file.(filelist)
 # make a single Corpus from the concatenated documents:
 c = Corpus(vcat(docs...))
 
-# The dispersion function measures, for each word in the vocabulary, how much
+# The dispersion function measures, for each word in the vocabulary, how often
 # that word is present across 40 equally-sized splits (by default) of the Corpus;
 # but here, for demonstration purposes, instead of the default we'll split the 
 # corpus at document boundaries. Since the documents by design are fairly 
@@ -68,7 +67,7 @@ permuted_counts = dropdims(sum(d_perm; dims = 2); dims = 2)
 # html, css, galaxies, celestial, cuisine, cookbooks
 result = map(
 	i -> mean(permuted_counts[i, :] .<= observed_counts[i]), 
-	1:size(temp, 1)
+	1:size(permuted_counts, 1)
 )
 thresh = quantile(result, 0.2)
 inds = findall(result .== 0)
