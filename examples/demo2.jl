@@ -74,7 +74,7 @@ result = map(
 	1:size(permuted_counts, 1)
 )
 thresh = quantile(result, 0.2)
-inds = findall(result .== 0)
+inds = findall(result .<= thresh)
 ω(c)[inds]
 
 
