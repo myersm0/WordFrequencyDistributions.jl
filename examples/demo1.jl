@@ -19,6 +19,9 @@ N(c)
 # a count of distinct words (types):
 V(c)
 
+# to get the distinct words (types):
+ω(c)
+
 # say we're interested in a particular word, "the" ...
 w = "the"
 
@@ -48,7 +51,7 @@ b = p(c[w][1:1000]) # method 2
 # interest, or if you're going to need frequency stats over the whole vocabulary.
 
 # You could get the relative sample frequencies at once for the whole vocabulary:
-a = f(c) / N(c)
+f(c) / N(c)
 
 # however, that just gives you counts and doesn't tell you what words they 
 # correspond to; to get that, you need ω(c), or you could put a Dict together:
