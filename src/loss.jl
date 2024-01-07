@@ -14,16 +14,16 @@ end
 
 function loss(
 		::MSE, c::Corpus; 
-		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = m⃗(c)[1:15]
+		y::Function, yhat::Function, iter::Union{AbstractVector, AbstractRange}
 	)
-	return mean((yhat(m, c) - y(m, c))^2 for m in spectra)
+	return mean((yhat(i, c) - y(i, c))^2 for i in iter)
 end
 
 function loss(
 		::MSEr, c::Corpus; 
-		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = m⃗(c)[1:15]
+		y::Function, yhat::Function, iter::Union{AbstractVector, AbstractRange}
 	)
-	return mean(((yhat(m, c) - y(m, c)) / V(c))^2 for m in spectra)
+	return mean(((yhat(i, c) - y(i, c)) / V(c))^2 for i in iter)
 end
 
 

@@ -21,7 +21,7 @@ c = Corpus{Int}(text)
 	MSE(), c;
 	y = (m, c) -> V(m, c),
 	yhat = (m, c) -> V(NaranBalasub(), m, c; C = params[1], μ = params[2], γ = params[3]),
-	spectra = m⃗(c)[1:40]
+	iter = m⃗(c)[1:40]
 )
 
 # note: you should probably compare results from  multiple initialization points, 

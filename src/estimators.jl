@@ -96,6 +96,7 @@ abstract type ExpectationEstimator <: Estimator end
 struct BinomialExpectation <: ExpectationEstimator end
 struct PoissonExpectation <: ExpectationEstimator end
 struct SampleExpectation <: ExpectationEstimator end
+struct HubertLabbe <: ExpectationEstimator end
 struct GoodTuring <: ExpectationEstimator end
 
 "Expected number of terms in a corpus of `N(c)` tokens at text-time `t`"
@@ -147,6 +148,18 @@ function f(::GoodTuring, e::ExpectationEstimator, i::Integer, c::Corpus; kwargs.
 	m < M(c) || error("Good-Turing doesn't work on the token with Zipf rank 1")
 	return (m + 1) * V(e, m + 1, c; kwargs...) / V(e, m, c; kwargs...)
 end
+
+"Hubert and Labbe partition-based adjustment (5.8)"
+function V(::HubertLabbe, c::Corpus; p::Real, t::Int)
+	ratio = t / N(c)
+	return p * ratio * V(c) + (1 - p) * sum(V(m, c) * (1 - (1 - ratio)^m) for m in m⃗(c))
+end
+
+function V(::HubertLabbe, m::Int, c::Corpus; p::Real, t::Int)
+	ratio = t / N(c)
+	return p * ratio * V(m, c) + (1 - p) * V(BinomialExpectation(), m, c; t = t)
+end
+
 
 
 

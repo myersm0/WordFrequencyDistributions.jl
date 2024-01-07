@@ -89,7 +89,7 @@ function intervals(c::Corpus{T}; k::Int = 20) where T
 	step_size = N(c) ÷ k
 	step_size > 0 || error(DomainError)
 	rem = N(c) % k
-	rng = range(step_size, step_size * k, k) |> collect .|> T
+	rng = range(step_size, step_size * k, k) |> collect .|> Int
 	rng[k:-1:(k - rem + 1)] .+= rem:-1:1
 	return rng
 end
