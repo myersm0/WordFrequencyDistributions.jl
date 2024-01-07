@@ -8,45 +8,45 @@ struct C3 <: LossFunction end
 
 function loss(
 		::LossFunction, c::Corpus; 
-		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = 1:15
+		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = m⃗(c)[1:15]
 	)
 end
 
 function loss(
 		::MSE, c::Corpus; 
-		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = 1:15
+		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = m⃗(c)[1:15]
 	)
-	return mean((yhat(m, c) - y(m, c))^2 for m in intersect(spectra, m⃗(c)))
+	return mean((yhat(m, c) - y(m, c))^2 for m in spectra)
 end
 
 function loss(
 		::MSEr, c::Corpus; 
-		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = 1:15
+		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = m⃗(c)[1:15]
 	)
-	return mean(((yhat(m, c) - y(m, c)) / V(c))^2 for m in intersect(spectra, m⃗(c)))
+	return mean(((yhat(m, c) - y(m, c)) / V(c))^2 for m in spectra)
 end
 
 "(3.65)"
-function loss(::C1, c::Corpus)
-	return abs(E(BinomialExpectation(), c) - V(c)) + abs(E(BinomialExpectation() ,1, c)) - V(1, c)
+function loss(::C1, c::Corpus; e::Estimator)
+	return abs(V(e, c) - V(c)) + abs(V(e, 1, c) - V(1, c))
 end
 
 "(3.66)"
-function loss(::C2, c::Corpus; r::Int)
+function loss(::C2, c::Corpus; r::Int, e::Estimator)
 	return (1 / (r + 2)) * (
-		(V(c) - E(BinomialExpectation(), c))^2 +
-		sum((V(m, c) - V(BinomialExpectation(), m, c))^2 for m in intersect(1:r, m⃗(c))) +
-		sum(V(m, c) - V(BinomialExpectation(), m, c) for m in setdiff(m⃗(c), 1:r))^2
+		(V(c) - E(e, c))^2 +
+		sum((V(m, c) - V(e, m, c))^2 for m in m⃗(c)[1:r]) +
+		sum(V(m, c) - V(e, m, c) for m in m⃗(c)[r + 1:end])^2
 	)
 end
 
 "like C2, but 'augmented with an extra term to keep the number of tokens balanced' (3.67)"
-function loss(::C3, c::Corpus; r::Int)
+function loss(::C3, c::Corpus; r::Int, e::Estimator)
 	return (1 / (r + 2)) * (
-		(V(c) - E(BinomialExpectation(), c))^2 +
-		sum((V(m, c) - V(BinomialExpectation(), m, c))^2 for m in intersect(1:r, m⃗(c))) +
-		sum(V(m, c) - V(BinomialExpectation(), m, c) for m in setdiff(m⃗(c), 1:r))^2 +
-		(N(c) - sum(m * V(BinomialExpectation(), m, c) for m in m⃗(c)))^2
+		(V(c) - E(e, c))^2 +
+		sum((V(m, c) - V(e, m, c))^2 for m in m⃗(c)[1:r]) +
+		sum(V(m, c) - V(e, m, c) for m in m⃗(c)[r + 1:end])^2 +
+		(N(c) - sum(m * V(e, m, c) for m in m⃗(c)))^2
 	)
 end
 
