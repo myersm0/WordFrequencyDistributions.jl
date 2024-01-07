@@ -1,13 +1,13 @@
 
 abstract type LossFunction end
-struct MSE <: LossFunction end
-struct MSEr <: LossFunction end
-struct C1 <: LossFunction end
-struct C2 <: LossFunction end
-struct C3 <: LossFunction end
+
+# ===== MSE and relative MSE loss, defined in Baayen chapters 1 and 2 ==========
+abstract type MSELoss end
+struct MSE <: MSELoss end
+struct MSEr <: MSELoss end
 
 function loss(
-		::LossFunction, c::Corpus; 
+		::MSELoss, c::Corpus; 
 		y::Function, yhat::Function, spectra::Union{AbstractVector, AbstractRange} = m⃗(c)[1:15]
 	)
 end
@@ -26,9 +26,18 @@ function loss(
 	return mean(((yhat(m, c) - y(m, c)) / V(c))^2 for m in spectra)
 end
 
+
+# ===== cost functions defined in Baayen chapter 3, Parametric Models ==========
+abstract type ParametricLoss end
+struct C1 <: ParametricLoss end
+struct C2 <: ParametricLoss end
+struct C3 <: ParametricLoss end
+
+function loss(::ParametricLoss, c::Corpus; r::Int, e::Estimator) end
+
 "(3.65)"
-function loss(::C1, c::Corpus; e::Estimator)
-	return abs(V(e, c) - V(c)) + abs(V(e, 1, c) - V(1, c))
+function loss(::C1, c::Corpus; r::Int, e::Estimator)
+	return abs(V(e, c) - V(c)) + sum(abs(V(e, m, c) - V(m, c)) for m in m⃗(c)[1:r])
 end
 
 "(3.66)"
