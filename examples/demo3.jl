@@ -44,8 +44,8 @@ ylims!(ax1, (-7.25, 7.25))
 ylims!(ax2, (-7.25, 7.25))
 
 scatter!(ax1, log.(1:M(c)), log.(ys); color = :black, marker = 'o')
-lines!(ax1, log.(1:M(c)), log.(yhats); color = :black)
+lines!(ax1, log.(1:M(c)), log.(yhats_zipf); color = :black)
 
 scatter!(ax2, log.(1:M(c)), log.(ys); color = :black, marker = 'o')
-lines!(ax2, log.(1:M(c)), log.(yhats); color = :black)
+lines!(ax2, log.(1:M(c)), log.(yhats_nb); color = :black)
 
