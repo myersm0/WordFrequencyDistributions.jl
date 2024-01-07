@@ -3,10 +3,7 @@ using WordFrequencyDistributions
 using GLMakie
 using Optim
 
-# this will tokenize the text of Alice in Wonderland; by the way, there are probably
-# better ways to do it, but I've done it this way to try to figure out and replicate
-# the method Baayen used in his book. I wasn't completely successful in that though,
-# but close
+# Set up "Alice in Wonderland" text to match results from Baayen 2001
 include(joinpath(dirname(@__FILE__), "tokenize.jl"))
 
 # from the above, we now have a Vector{String} called text in our environment

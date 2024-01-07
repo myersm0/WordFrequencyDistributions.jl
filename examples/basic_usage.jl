@@ -2,10 +2,7 @@
 using WordFrequencyDistributions
 using GLMakie
 
-# this will tokenize the text of Alice in Wonderland; by the way, there are probably
-# better ways to do it, but I've done it this way to try to figure out and replicate
-# the method Baayen used in his book. I wasn't completely successful in that though,
-# but close
+# Set up "Alice in Wonderland" text to match results from Baayen 2001
 include(joinpath(dirname(@__FILE__), "tokenize.jl"))
 
 # from the above, we now have a Vector{String} called text in our environment
@@ -99,26 +96,5 @@ end
 # off the advantages of this package, which mostly come into play when
 # you're interested in a large set of words, rather than just one ("the"), 
 # or the distributional patterns of the entire vocabulary
-
-
-𝑓(params) = loss(
-	MSE(), c;
-	y = (m, c) -> V(m, c),
-	yhat = (m, c) -> V(NaranBalasub(), m, c; C = params[1], μ = params[2], γ = params[3]),
-	spectra = 1:15
-)
-
-struct MySimplexer <: Optim.Simplexer end
-optimize(myfun, [0.0, 0.0, 0.0], NelderMead(initial_simplex = MySimplexer()))
-Optim.simplexer(S::MySimplexer, initial_C) = [rand(length(initial_C)) for i = 1:length(initial_C) + 1]
-
-
-
-
-ys = [V(NaranBalasub(), m, c; C = 1429.068, μ = 0.193, γ = 1.629) for m in 1:15]
-yhats = [V(m, c) for m in 1:15]
-
-
-
 
 

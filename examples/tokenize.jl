@@ -4,6 +4,11 @@ using StatsBase
 using Pkg.Artifacts
 
 ## Set up "Alice in Wonderland" text to match results from Baayen 2001
+#
+# this will tokenize the text of Alice in Wonderland; by the way, there are probably
+# better ways to do it, but I've done it this way to try to figure out and replicate
+# the method Baayen used in his book. I wasn't completely successful in that though,
+# but close
 
 rootpath = artifact"pg_texts"
 filename = joinpath(rootpath, "pg11.txt") # Alice in Wonderland
