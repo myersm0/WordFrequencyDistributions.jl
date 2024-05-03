@@ -63,8 +63,6 @@ subsets = [
 
 	@test all(21p(consonant, c) ≈ p(vowel, c) for consonant in consonants, vowel in vowels)
 
-	@test all(p(Safe(), w, c) == p(Fast(), w, c) for w in alphabet)
-
 	@test g(1, c) == length(alphabet)
 	@test all(g(m, c) == length(vowels) for m in 2:M(c))
 

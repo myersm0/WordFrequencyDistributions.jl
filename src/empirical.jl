@@ -6,32 +6,16 @@
 N(c::Corpus) = c.N
 
 "Get the frequency of the `i`th word in the corpus."
-f(i::Integer, c::Corpus) = f(Fast(), i, c)
+f(i::Integer, c::Corpus) = get(f(c), i, 0)
 
 "Get the frequency of word `w` from the corpus."
-f(w::String, c::Corpus) = f(Fast(), w, c)
-
-# "fast" variants of f(...) by default
-f(::Fast, i::Integer, c::Corpus) = f(c)[i]
-f(::Fast, w::String, c::Corpus) = f(c)[c.ωmap[w]]
-
-# "safe" variants of f(...) check whether the requested item is in the lexicon or not
-f(::Safe, i::Integer, c::Corpus) = i <= V(c) ? f(Fast(), i, c) : 0
-f(::Safe, w::String, c::Corpus) = occursin(w, c) ? f(Fast(), w, c) : 0
+f(w::String, c::Corpus) = get(f(c), get(c.ωmap, w, 0), 0)
 
 "Get the relative frequency of the `i`th word in the corpus."
-p(i::Integer, c::Corpus) = p(Fast(), i, c)
+p(i::Integer, c::Corpus) = f(i, c) / N(c)
 
 "Get the relative frequency of the word `w` from the corpus."
-p(w::String, c::Corpus) = p(Fast(), w, c)
-
-# "fast" variants of p(...) by default
-p(::Fast, i::Integer, c::Corpus) = f(i, c) / N(c)
-p(::Fast, w::String, c::Corpus) = f(w, c) / N(c)
-
-# "safe" variants of p(...) check whether the requested item is in the lexicon or not
-p(::Safe, i::Integer, c::Corpus) = f(Safe(), i, c) / N(c)
-p(::Safe, w::String, c::Corpus) = f(Safe(), w, c) / N(c)
+p(w::String, c::Corpus) = f(w, c) / N(c)
 
 # BitVector alternatives for f and p, e.g. when working with a single occurrence vector
 f(x::AbstractVector{Bool}) = sum(x)
