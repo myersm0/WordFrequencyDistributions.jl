@@ -7,9 +7,6 @@ struct ZipfRank
 	end
 end
 
-Base.:(<)(z::ZipfRank, args...) = <(z.rank, args...)
-Base.:(>)(z::ZipfRank, args...) = >(z.rank, args...)
-Base.:(==)(z::ZipfRank, args...) = ==(z.rank, args...)
-
-Broadcast.broadcastable(z::ZipfRank) = z.rank
+Base.isless(z::ZipfRank, args...) = isless(z.rank, args...)
+Base.isless(a::ZipfRank, b::ZipfRank) = isless(a.rank, b.rank)
 
