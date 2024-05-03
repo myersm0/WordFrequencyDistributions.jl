@@ -4,11 +4,6 @@ module WordFrequencyDistributions
 using Chain
 using StatsBase
 
-abstract type CheckStyle end
-struct Safe <: CheckStyle end
-struct Fast <: CheckStyle end
-export CheckStyle, Safe, Fast
-
 include("corpora.jl")
 export Corpus, getindex, sample, permute, occursin, occurrences, m⃗, M, spectrum
 export intervals, partition
