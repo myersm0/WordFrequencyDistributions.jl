@@ -4,10 +4,10 @@
 	ω::Vector{String}
 	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
 	N::Int = length(source)
-	V::Ref{Union{Nothing, Int}} = nothing
-	f::Ref{Union{Nothing, Vector{Int}}} = nothing        # occurence counts for each type
-	spectrum::Ref{Union{Nothing, Vector{Int}}} = nothing # tabulation of occurrence counts
-	m⃗::Ref{Union{Nothing, Vector{Int}}} = nothing        # the indices of non-zero spectra
+	f::Vector{Int} = counts(source, length(ω))
+	V::Int = sum(f .> 0)
+	spectrum::Vector{Int} = counts(f, length(ω))
+	m⃗::Vector{Int} = findall(spectrum .!= 0)
 end
 
 """
@@ -122,23 +122,19 @@ end
 # ===== lazy field initializers ================================================
 
 function V(c::Corpus)
-	isnothing(c.V[]) && (c.V[] = sum(f(c) .> 0))
-	return c.V[]
+	return c.V
 end
 
 function f(c::Corpus)
-	isnothing(c.f[]) && (c.f[] = counts(c.source, length(c.ω)))
-	return c.f[]
+	return c.f
 end
 
 function spectrum(c::Corpus)
-	isnothing(c.spectrum[]) && (c.spectrum[] = counts(f(c), length(c.ω)))
-	return c.spectrum[]
+	return c.spectrum
 end
 
 function m⃗(c::Corpus)
-	isnothing(c.m⃗[]) && (c.m⃗[] = findall(spectrum(c) .!= 0))
-	return c.m⃗[]
+	return c.m⃗
 end
 
 function M(c::Corpus)

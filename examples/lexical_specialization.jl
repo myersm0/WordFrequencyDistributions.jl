@@ -1,7 +1,7 @@
 
 using WordFrequencyDistributions
 using Chain
-using StatsBase: quantile
+using StatsBase: quantile, mean
 using Pkg.Artifacts
 using GLMakie
 using Colors
