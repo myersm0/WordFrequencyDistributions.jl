@@ -9,7 +9,7 @@ N(c::Corpus) = c.N
 f(i::Integer, c::Corpus) = get(f(c), i, 0)
 
 "Get the frequency of word `w` from the corpus."
-f(w::String, c::Corpus) = get(f(c), get(c.ωmap, w, 0), 0)
+f(w::String, c::Corpus{T}) where T = get(f(c), get(c.ωmap, w, T(0)), 0)
 
 "Get the relative frequency of the `i`th word in the corpus."
 p(i::Integer, c::Corpus) = f(i, c) / N(c)
