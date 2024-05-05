@@ -22,7 +22,13 @@ f(x::AbstractVector{Bool}) = sum(x)
 p(x::AbstractVector{Bool}) = f(x) / length(x)
 
 "Get the empirical structural type distribution for the `i`th spectrum element in the corpus."
-g(m::Integer, c::Corpus) = m > M(c) ? 0 : sum(spectrum(c)[m:end])
+function g(m::Integer, c::Corpus)
+	if m > M(c) ÷ 2
+		return sum(spectrum(c)[m:M(c)])
+	else
+		return V(c) - sum(spectrum(c)[1:(m - 1)])
+	end
+end
 
 "Get the number of words occurring `m` times in the corpus."
 V(m::Integer, c::Corpus) = spectrum(c)[m]
