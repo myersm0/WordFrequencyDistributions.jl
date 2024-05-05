@@ -1,8 +1,8 @@
 
-@kwdef struct Corpus{T <: Integer}
-	source::Vector{T}
-	ω::Vector{String}
-	ωmap::Dict{String, T} = Dict{String, T}(w => i for (i, w) in enumerate(ω))
+@kwdef struct Corpus{T1, T2 <: Integer}
+	source::Vector{T2}
+	ω::Vector{T1}
+	ωmap::Dict{T1, T2} = Dict{T1, T2}(w => i for (i, w) in enumerate(ω))
 	N::Int = length(source)
 	f::Vector{Int} = counts(source, length(ω))
 	V::Int = sum(f .> 0)
@@ -16,14 +16,14 @@ end
 Initialize a `Corpus{T}` from a vector of strings `text`. The token count should
 not exceed `typemax(T)`.
 """
-function Corpus{T}(text::Vector{String}) where T <: Integer
+function Corpus{T1, T2}(text::Vector{T1}) where {T1, T2 <: Integer}
 	N = length(text)
 	ω = unique(text)
-	length(ω) <= typemax(T) || error("Number of unique words exceeds typemax for Corpus{$(T)}")
+	length(ω) <= typemax(T2) || error("Number of unique words exceeds typemax for Corpus{$(T2)}")
 	V = length(ω)
-	ωmap = Dict{String, T}(w => i for (i, w) in enumerate(ω))
+	ωmap = Dict{T1, T2}(w => i for (i, w) in enumerate(ω))
 	word_indices = [ωmap[w] for w in text]
-	return Corpus{T}(source = word_indices, ω = ω, ωmap = ωmap)
+	return Corpus{T1, T2}(source = word_indices, ω = ω, ωmap = ωmap)
 end
 
 """
@@ -31,7 +31,9 @@ end
 
 Initialize a `Corpus{UInt16}` from a vector of strings `text`.
 """
-Corpus(text::Vector{String}) = Corpus{UInt16}(text)
+Corpus(text::Vector{String}) = Corpus{String, UInt16}(text)
+
+Corpus(text::Vector{T1}) where T1 = Corpus{T1, UInt16}(text)
 
 """
     getindex(c, rng)
@@ -39,9 +41,9 @@ Corpus(text::Vector{String}) = Corpus{UInt16}(text)
 Turn `Corpus c` into a smaller corpus using only its tokens in `rng`.
 """
 function Base.getindex(
-		c::Corpus{T}, rng::Union{AbstractVector{<: Integer}, AbstractRange{<: Integer}}
-	) where T <: Integer
-	return Corpus{T}(source = c.source[rng], ω = c.ω, ωmap = c.ωmap)
+		c::Corpus{T1, T2}, rng::Union{AbstractVector{<: Integer}, AbstractRange{<: Integer}}
+	) where {T1, T2}
+	return Corpus{T1, T2}(source = c.source[rng], ω = c.ω, ωmap = c.ωmap)
 end
 
 """
@@ -49,7 +51,7 @@ end
 
 Get a binary occurrence vector of the word `w` in `Corpus c`.
 """
-function Base.getindex(c::Corpus, w::String)
+function Base.getindex(c::Corpus{T1, T2}, w::T1) where {T1, T2}
 	return c.source .== c.ωmap[w]
 end
 
@@ -76,7 +78,7 @@ end
 
 Check if word `w::String` occurs in `c::Corpus`.
 """
-function Base.occursin(w::String, c::Corpus)
+function Base.occursin(w::T1, c::Corpus{T1, T2}) where {T1, T2}
 	return haskey(c.ωmap, w) && f(c)[c.ωmap[w]] != 0
 end
 
@@ -85,7 +87,7 @@ end
 
 Get `k` (default: 20) equispaced points from 1 to N(c)`.
 """
-function intervals(c::Corpus{T}; k::Int = 20) where T
+function intervals(c::Corpus; k::Int = 20)
 	step_size = N(c) ÷ k
 	step_size > 0 || error(DomainError)
 	rem = N(c) % k

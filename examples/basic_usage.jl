@@ -8,7 +8,7 @@ include(joinpath(dirname(@__FILE__), "tokenize.jl"))
 # from the above, we now have a Vector{String} called text in our environment
 
 # initializing a Corpus is fast; most fields are not initialized until they're needed
-c = Corpus{Int}(text)
+c = Corpus(text)
 
 # a count of tokens:
 N(c)
