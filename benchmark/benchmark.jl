@@ -23,7 +23,8 @@ println("\n[2/6] Creating corpus structure...")
 total_start = time()
 step_start = time()
 
-c = Corpus(text)
+# we can use UInt16 to save storage space (e.g. relative to Int64)
+c = Corpus{String, UInt16}(text)
 
 step_time = time() - step_start
 println("    ✓ Created corpus with $(V(c)) types in $(round(step_time * 1000, digits=2)) ms")
