@@ -108,10 +108,22 @@ function V(::ExpectationEstimator, m::Integer, c::Corpus; t::Integer) end
 "(2.41)"
 function V(::BinomialExpectation, m::Integer, c::Corpus; t::Integer)
 	ratio = t / N(c)
-	return sum(
-		V(k, c) * binomial(BigInt(k), m) * ratio^m * (1 - ratio)^(k - m) 
+	log_ratio = log(ratio)
+	log_one_minus_ratio = log1p(-ratio)
+	log_terms = [
+		log(V(k, c)) +
+		loggamma(k + 1) - loggamma(m + 1) - loggamma(k - m + 1) +
+		m * log_ratio +
+		(k - m) * log_one_minus_ratio
 		for k in filter(k -> k >= m, m⃗(c))
-	)
+	]
+	return exp(logsumexp(log_terms))
+end
+
+# helper for the above
+function logsumexp(log_values)
+	 maxlog = maximum(log_values)
+	 return maxlog + log(sum(exp(x - maxlog) for x in log_values))
 end
 
 "(2.42)"

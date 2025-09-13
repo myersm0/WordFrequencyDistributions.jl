@@ -5,10 +5,12 @@ version = "0.4.0"
 
 [deps]
 Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
+SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 Chain = "0.5"
+SpecialFunctions = "2"
 StatsBase = "0.34"
 julia = "1.9"
 

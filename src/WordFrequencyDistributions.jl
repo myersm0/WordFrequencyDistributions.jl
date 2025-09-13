@@ -3,6 +3,7 @@ module WordFrequencyDistributions
 
 using Chain
 using StatsBase
+using SpecialFunctions
 
 include("corpora.jl")
 export Corpus, getindex, sample, permute, occursin, occurrences, m⃗, M, spectrum
