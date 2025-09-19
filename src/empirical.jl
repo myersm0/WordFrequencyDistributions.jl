@@ -1,6 +1,12 @@
 
 "Get the vocabulary elements of the corpus."
-ω(c::Corpus) = c.ω[f(c) .> 0]
+function ω(c::Corpus{T1, T2}) where {T1, T2}
+    ω = Vector{T1}(undef, length(c.ωmap))
+    for (word, idx) in c.ωmap
+        @inbounds ω[idx] = word
+    end
+    return ω[c.f .> 0]  # Return only active vocabulary
+ end
 
 "Get the number of words in the corpus."
 N(c::Corpus) = c.N

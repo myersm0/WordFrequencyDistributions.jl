@@ -1,33 +1,42 @@
 
 @kwdef struct Corpus{T1, T2 <: Integer}
 	source::Vector{T2}
-	ω::Vector{T1}
-	ωmap::Dict{T1, T2} = Dict{T1, T2}(w => i for (i, w) in enumerate(ω))
+	ωmap::Dict{T1, T2}
 	N::Int = length(source)
-	f::Vector{Int} = counts(source, length(ω))
+	f::Vector{Int} = counts(source, length(ωmap))
 	V::Int = sum(f .> 0)
-	spectrum::Vector{Int} = counts(f, length(ω))
+	spectrum::Vector{Int} = counts(f, length(ωmap))
 	m⃗::Vector{Int} = findall(spectrum .!= 0)
 end
 
 """
-    Corpus{T}(text)
+	Corpus{T}(text)
 
 Initialize a `Corpus{T}` from a vector of strings `text`. The token count should
 not exceed `typemax(T)`.
 """
 function Corpus{T1, T2}(text::Vector{T1}) where {T1, T2 <: Integer}
 	N = length(text)
-	ω = unique(text)
-	length(ω) <= typemax(T2) || error("Number of unique words exceeds typemax for Corpus{$(T2)}")
-	V = length(ω)
-	ωmap = Dict{T1, T2}(w => i for (i, w) in enumerate(ω))
-	word_indices = [ωmap[w] for w in text]
-	return Corpus{T1, T2}(source = word_indices, ω = ω, ωmap = ωmap)
+	ωmap = Dict{T1, T2}()
+	sizehint!(ωmap, 27000)
+	source = Vector{T2}(undef, N)
+	next_id = T2(1)
+	@inbounds for i in 1:N
+		word = text[i]
+		id = get!(ωmap, word) do
+			current = next_id
+			next_id += 1
+			current
+		end
+		source[i] = id
+	end
+	V = length(ωmap)
+	V <= typemax(T2) || error("Number of unique words exceeds typemax for Corpus{$(T2)}")
+	return Corpus{T1, T2}(source = source, ωmap = ωmap, N = N, V = V)
 end
 
 """
-    Corpus(text)
+	Corpus(text)
 
 Initialize a `Corpus{UInt16}` from a vector of strings `text`.
 """
@@ -36,18 +45,18 @@ Corpus(text::Vector{String}) = Corpus{String, UInt16}(text)
 Corpus(text::Vector{T1}) where T1 = Corpus{T1, UInt16}(text)
 
 """
-    getindex(c, rng)
+	getindex(c, rng)
 
 Turn `Corpus c` into a smaller corpus using only its tokens in `rng`.
 """
 function Base.getindex(
 		c::Corpus{T1, T2}, rng::Union{AbstractVector{<: Integer}, AbstractRange{<: Integer}}
 	) where {T1, T2}
-	return Corpus{T1, T2}(source = c.source[rng], ω = c.ω, ωmap = c.ωmap)
+	return Corpus{T1, T2}(source = c.source[rng], ωmap = c.ωmap)
 end
 
 """
-    getindex(c, w)
+	getindex(c, w)
 
 Get a binary occurrence vector of the word `w` in `Corpus c`.
 """
@@ -56,7 +65,7 @@ function Base.getindex(c::Corpus{T1, T2}, w::T1) where {T1, T2}
 end
 
 """
-    sample(c, args...; kwargs...)
+	sample(c, args...; kwargs...)
 
 Make a new `Corpus` by randomly sampling the tokens from `c`.
 """
@@ -65,7 +74,7 @@ function StatsBase.sample(c::Corpus, args...; kwargs...)
 end
 
 """
-    sample(c, args...; kwargs...)
+	sample(c, args...; kwargs...)
 
 Make a new `Corpus` by shuffling all the tokens from `c`.
 """
@@ -74,7 +83,7 @@ function permute(c::Corpus)
 end
 
 """
-    occursin(w, c)
+	occursin(w, c)
 
 Check if word `w::String` occurs in `c::Corpus`.
 """
@@ -83,7 +92,7 @@ function Base.occursin(w::T1, c::Corpus{T1, T2}) where {T1, T2}
 end
 
 """
-    intervals(c; k)
+	intervals(c; k)
 
 Get `k` (default: 20) equispaced points from 1 to N(c)`.
 """
@@ -112,12 +121,10 @@ function Base.show(io::IO, mime::MIME"text/plain", c::Corpus)
 	print(io, "Corpus with $(N(c)) tokens, $(V(c)) types")
 end
 
-function recover(c::Corpus)
-	return [c.ω[i] for i in c.source]
-end
-
 function Base.:(==)(c1::Corpus, c2::Corpus)
-	return recover(c1) == recover(c2)
+	f1 = f(c1)
+	f2 = f(c2)
+	return all(x in ω(c2) for x in ω(c2)) && f1[f1 .!= 0] == f2[f2 .!= 0]
 end
 
 
